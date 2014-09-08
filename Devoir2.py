@@ -85,8 +85,9 @@ def voigt4_to_tensor4( A_voigt4 ):
 				flagb = True
 			
 			A_tensor4[i][j][k][l] = A_voigt4[a][b]
-			print "A_voigt4[",a ,"][", b, "] = " ,A_voigt4[a][b]
-			print "A_tensor4[", i, "][", j, "][", k, "][", l, "] =", A_tensor4[i][j][k][l]
+			print "A_voigt4[",a ,"][", b, "] = " , "A_tensor4[", i, "][", j, "][", k, "][", l, "]" 
+			print A_tensor4[i][j][k][l], A_voigt4[a][b]
+			print "-------------------------------------------------------------------"
 			
 			if (flaga is True):
 				if (flagb is True):
@@ -99,9 +100,25 @@ def voigt4_to_tensor4( A_voigt4 ):
 			else:
 				if (flagb is True):
 					A_tensor4[i][j][kp][lp]=A_voigt4[a][b]/(sqrt(2))
+					
+	#Symmetry
+	m = 0
+	for i in range(len(A_tensor4)):
+		for j in range(len(A_tensor4[i])):
+			for k in range(len(A_tensor4[i][j])):
+				for l in range(len(A_tensor4[i][j][k])):
+					m = m + 1
+					print m, i,j,k,l, A_tensor4[i][j][k][l]
+					try:	
+						A_tensor4[i][j][l][k] = A_tensor4[i][j][k][l]
+						A_tensor4[j][i][k][l] = A_tensor4[i][j][k][l]
+					except:
+						print "Couldn't apply symmetry"
 
 	return A_tensor4
-			
+
+
+#Generate a tensor, any order, any size
 def initTensor(value, *lengths):
 	list = []
 	dim = len(lengths)
@@ -122,7 +139,5 @@ A_voigt4 = [ [ 0.241, -0.202, -0.347, -0.848, 0.959, -0.023 ],
 	     [ -0.023, 0.861, -0.927, 0.201, -0.392, -0.719]
 	     ]
 
-print voigt4_to_tensor4( A_voigt4 )
+voigt4_to_tensor4( A_voigt4 )
 
-print "=========================="
-print initTensor(0, 6, 6 )
