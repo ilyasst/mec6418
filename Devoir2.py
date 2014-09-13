@@ -4,18 +4,18 @@ def tensor4_to_voigt4( A_tensor4 ):
 	A_voigt4 = initTensor(0, 6, 6)	
 	
 	for i in range( 0, 3 ):
-		print i
+		#print i
 		for j in range( 0, 3 ):
 			A_voigt4[i][j] = A_tensor4[i][i][j][j]
 			
 	for i in range( 0, 3 ):
-		print i
+		#print i
 		A_voigt4[3][i] = sqrt(2) * A_tensor4[1][2][i][i]
 		A_voigt4[4][i] = sqrt(2) * A_tensor4[2][0][i][i]
 		A_voigt4[5][i] = sqrt(2) * A_tensor4[0][1][i][i]
 		
 	for j in range( 0, 3 ):
-		print j
+		#print j
 		A_voigt4[j][3] = sqrt(2) * A_tensor4[j][j][1][2]
 		A_voigt4[j][4] = sqrt(2) * A_tensor4[j][j][2][0]
 		A_voigt4[j][5] = sqrt(2) * A_tensor4[j][j][0][1]
@@ -32,23 +32,21 @@ def tensor4_to_voigt4( A_tensor4 ):
 	A_voigt4[4][5] = 2 * A_tensor4[2][0][0][1]
 	A_voigt4[5][5] = 2 * A_tensor4[0][1][0][1]
 	
-	print "AVOIGT4[0]:"
-	for i in range(len(A_voigt4[0])):
-		print A_voigt4[i]
+	#print "AVOIGT4[0]:"
+	#for i in range(len(A_voigt4[0])):
+		#print A_voigt4[i]
 
 	return A_voigt4
 	
 #Takes A_voigt(6,6) gives back A_tensor(4,4,4,4)
 def voigt4_to_tensor4( A_voigt4 ):
-	
-	#A_tensor4 = [ [ [ [ 0 for l in range(3)] for k in range(3)] for i in range(3) ] for j in range(5) ]
+
 	A_tensor4 = initTensor(0, 3, 3, 3, 3)
 	
 	a = 0
 	b = 0
 	A_voigt4_length = len( A_voigt4 )
 	for a in range(0, A_voigt4_length ):
-
 		for b in range(0, A_voigt4_length ):
 
 			flaga = False
@@ -82,43 +80,43 @@ def voigt4_to_tensor4( A_voigt4 ):
 			if (a == 3):
 				i=0
 				j=1
-				ip=0
-				jp=1
+				ip=1
+				jp=2
 				flaga= True
 
 			if (b ==3):
 				k=0
 				l=1
-				kp=0
-				lp=1
+				kp=1
+				lp=2
 				flagb= True	
 
 			if (a == 4):
 				i=1
 				j=2
-				ip=1
-				jp=2
+				ip=2
+				jp=0
 				flaga= True
 	
 			if (b == 4):
 				k=1
 				l=2
-				kp=1
-				lp=2
+				kp=2
+				lp=0
 				flagb= True
 	
 			if (a == 5):
 				i=0
 				j=2
 				ip=0
-				jp=2
+				jp=1
 				flaga= True
 
 			if (b == 5):
 				k=0
 				l=2
 				kp=0
-				lp=2
+				lp=1
 				flagb = True
 			
 			A_tensor4[i][j][k][l] = A_voigt4[a][b]
@@ -134,9 +132,10 @@ def voigt4_to_tensor4( A_voigt4 ):
 				else:
 					A_tensor4[ip][jp][k][l]=A_voigt4[a][b]/(sqrt(2))
 
-			else:
-				if (flagb is True):
+			elif(flagb is True):
 					A_tensor4[i][j][kp][lp]=A_voigt4[a][b]/(sqrt(2))
+
+				
 					
 	#Symmetry
 	m = 0
@@ -148,7 +147,13 @@ def voigt4_to_tensor4( A_voigt4 ):
 					#print m, i,j,k,l, A_tensor4[i][j][k][l]
 					try:	
 						A_tensor4[i][j][l][k] = A_tensor4[i][j][k][l]
+						#print A_tensor4[i][j][l][k], A_tensor4[i][j][k][l]
 						A_tensor4[j][i][k][l] = A_tensor4[i][j][k][l]
+
+						
+						A_tensor4[k][l][i][j] = A_tensor4[i][j][k][l]
+						A_tensor4[j][i][l][k] = A_tensor4[i][j][k][l]
+
 					except:
 						print "Couldn't apply symmetry"
 
@@ -285,15 +290,18 @@ A_tensor4 = voigt4_to_tensor4( A_voigt4 )
 print "Tensor minor symmetry is...", check_tensor_minor_symmetry( A_tensor4 )
 print "Tensor major symmetry is...",check_tensor_major_symmetry(A_tensor4 )
 
-P = generate_trans_matrix( init_base, final_base )
-print P
-A_tensor_in_new_base = tensorial_base_change( P, A_tensor4 )
-A_voigt4_new_base = tensor4_to_voigt4( A_tensor_in_new_base )
+#P = generate_trans_matrix( init_base, final_base )
+#print P
+#A_tensor_in_new_base = tensorial_base_change( P, A_tensor4 )
+#A_voigt4_new_base = tensor4_to_voigt4( A_tensor_in_new_base )
 
-print "======================================================"
-print "======================================================"
-print "RESULT:"
-print "A_voigt4_in_new_base ="
-for i in range(len(A_voigt4_new_base)):
-	print A_voigt4_new_base[i]
+#print "======================================================"
+#print "======================================================"
+#print "RESULT:"
+print "A_tensor4 ="
+for i in range(len(A_tensor4[0][0][0])):
+	for j in range(len(A_tensor4[0][0][0])):
+		for k in range(len(A_tensor4[0][0][0])):
+			for l in range(len(A_tensor4[0][0][0])):
+				print i,j,k,l, A_tensor4[i][j][k][l]
 
