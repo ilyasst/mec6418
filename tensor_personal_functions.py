@@ -1,5 +1,29 @@
 from numpy import *
 
+#=============================================================
+# Symmetries
+#=============================================================
+#	check_tensor_minor_symmetry( tensor )
+#	check_tensor_major_symmetry( tensor )
+#	apply_minor_sym_to_tensor_term( A_tensor4, i, j, k, l )
+#	apply_major_sym_to_tensor_term( A_tensor4, i, j, k, l )
+
+#=============================================================
+# Voigt
+#=============================================================
+#	tensor4_to_voigt4( A_tensor4 )
+#	voigt4_to_tensor4( A_voigt4 )
+
+#=============================================================
+# Base change
+#=============================================================
+#	tensorial_base_change( P, tensorA )
+
+#=============================================================
+# Matrix
+#=============================================================
+#	matrix_dot_matrix( matrixa, matrixb )
+
 def check_tensor_minor_symmetry( tensor ):
 	for i in range(len(tensor[0][0][0])):
 		for j in range(len(tensor[0][0][0])):
@@ -38,14 +62,11 @@ def check_tensor_major_symmetry( tensor ):
 
 def tensor4_to_voigt4( A_tensor4 ):
 	A_voigt4 = initTensor(0, 6, 6)
-	print "A_voigt4[0][0] = ", A_voigt4[0][0]
 	
 	#blue
 	for i in range( 0, 3 ):
 		for j in range( 0, 3 ):
-			print "i =", i, "j =", j
 			A_voigt4[i][j] = A_tensor4[i][i][j][j]
-			print "A_voigt4[i][j] =", A_voigt4[i][j]
 		
 
 	for i in range( 0, 3 ):
@@ -87,7 +108,6 @@ def voigt4_to_tensor4( A_voigt4 ):
 	a = 0
 	b = 0
 	A_voigt4_length = len( A_voigt4 )
-	print "Len A_voigt4=", A_voigt4
 	for a in range(0, A_voigt4_length ):
 		for b in range(0, A_voigt4_length ):
 
@@ -221,6 +241,7 @@ def vector_dot_vector( vectora, vectorb ):
 
 
 #Generate a tensor, any order, any size
+#Value is the default value, commonly 0
 def initTensor(value, *lengths):
 	list = []
 	dim = len(lengths)
@@ -241,14 +262,6 @@ def matrix_dot_matrix( matrixa, matrixb ):
 			for k in range( len( matrixa )):
 				C[i][j] = C[i][j] + matrixa[i][k]*matrix[k][j]
 	return C
-	
-def kronecker( i, j ):
-	if ( i == j ):
-		return 1
-	else:
-		return 0
-	
-	
 
 def tensorial_base_change( P, tensorA ):
 	tensorB = initTensor( 0, 3, 3, 3, 3)
