@@ -56,8 +56,23 @@ def problem2():
 		
 def problem4():
 	epsilon_ijk = generate_epsilon_ijk()
+	
+	print "======================================================"
+	print "======================================================"
+	print "Problem 04"
+	print "======================================================"
+	print "======================================================"
+	print "epsilon_ijk ="
+	
 	for i in range(0, 3):
 		print epsilon_ijk[i]
+	
+	print "======================================================"
+	print "Question 1"
+	print "epsilon_ijk[i][j][k]*epsilon_ijk[i][j][k] ?"
+	print "------------------------------------------------------"
+	#Question 1
+	# epsilon_ijk[i][j][k]*epsilon_ijk[i][j][k] ?
 	
 	result = 0
 	
@@ -68,12 +83,27 @@ def problem4():
 	
 	print "epsilon_ijk[i][j][k]*epsilon_ijk[i][j][k] = ", result
 	
+	#Question 2
+	# epsilon_ijk[i][j][k]*epsilon_ijk[m][j][k] ?
 	
-	result = 0
+	print "======================================================"
+	print "Question 2"
+	print "epsilon_ijk[i][j][k]*epsilon_ijk[m][j][k] ?"
+	print "------------------------------------------------------"
 	
-
+	result = initTensor(0, 3, 3)
 	
-	return result
+	for i in range(0,3):
+		for m in range(0,3):
+			summation = 0
+			for j in range(0,3):
+				for k in range(0,3):
+					result[i][m] = summation + epsilon_ijk[i][j][k]*epsilon_ijk[m][j][k]
+	
+	print "epsilon_ijk[i][j][k]*epsilon_ijk[m][j][k] = "
+	for i in range(0,3):
+		print result[i]
+	
 		
 		
 #problem2()
