@@ -37,15 +37,17 @@ def check_tensor_major_symmetry( tensor ):
 
 
 def tensor4_to_voigt4( A_tensor4 ):
-	A_voigt4 = initTensor(0, 6, 6)	
+	A_voigt4 = initTensor(0, 6, 6)
+	print "A_voigt4[0][0] = ", A_voigt4[0][0]
 	
-	#Violet
+	#blue
 	for i in range( 0, 3 ):
-		#print i
 		for j in range( 0, 3 ):
+			print "i =", i, "j =", j
 			A_voigt4[i][j] = A_tensor4[i][i][j][j]
+			print "A_voigt4[i][j] =", A_voigt4[i][j]
 		
-	#	
+
 	for i in range( 0, 3 ):
 		#print i
 		A_voigt4[3][i] = sqrt(2) * A_tensor4[1][2][i][i]

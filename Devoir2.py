@@ -27,18 +27,19 @@ A_tensor4 = voigt4_to_tensor4( A_voigt4 )
 print "Tensor minor symmetry is...", check_tensor_minor_symmetry( A_tensor4 )
 print "Tensor major symmetry is...",check_tensor_major_symmetry(A_tensor4 )
 
-#P = generate_trans_matrix( init_base, final_base )
-#print P
-#A_tensor_in_new_base = tensorial_base_change( P, A_tensor4 )
-#A_voigt4_new_base = tensor4_to_voigt4( A_tensor_in_new_base )
+P = generate_trans_matrix( init_base, final_base )
+print P
+A_tensor_in_new_base = tensorial_base_change( P, A_tensor4 )
+A_voigt4_new_base = tensor4_to_voigt4( A_tensor_in_new_base )
 
-#print "======================================================"
-#print "======================================================"
-#print "RESULT:"
-print "A_tensor4 ="
-for i in range(len(A_tensor4[0][0][0])):
-	for j in range(len(A_tensor4[0][0][0])):
-		for k in range(len(A_tensor4[0][0][0])):
-			for l in range(len(A_tensor4[0][0][0])):
-				print i,j,k,l, A_tensor4[i][j][k][l]
+print "======================================================"
+print "======================================================"
+print "RESULT:"
+print "A_voigt4_new_base ="
+print A_voigt4_new_base
+for i in range(len(A_tensor_in_new_base[0])):
+	for j in range(len(A_tensor_in_new_base[0][0])):
+		for k in range(len(A_tensor_in_new_base[0][0])):
+			for l in range(len(A_tensor_in_new_base[0][0])):
+				print i,j,k,l, A_tensor_in_new_base[i][j][k][l]
 
