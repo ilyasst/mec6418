@@ -218,6 +218,7 @@ def apply_major_sym_to_tensor_term( A_tensor4, i, j, k, l ):
 	return A_tensor4
 	
 	
+#Only convenient if initial and final base given, else, determine P by hand, much faster
 def generate_trans_matrix( init_base, final_base ):
 	P = initTensor(0, 3, 3)
 	for i in range(len(init_base)):
@@ -276,3 +277,37 @@ def tensorial_base_change( P, tensorA ):
 								for l in range( len( tensorA[0][0][0] ) ):
 									tensorB[m][n][o][p] = tensorB[m][n][o][p] + P[i][m]*P[j][n]*P[k][o]*P[l][p]*tensorA[i][j][k][l]
 	return tensorB
+
+	
+
+def voigt_to_matrix( A_tensor2_voigtshape ):
+	A_tensor2_matrix = initTensor(0, 3, 3)
+	
+	A_tensor2_matrix[0][0] = A_tensor2_voigtshape[0]
+	A_tensor2_matrix[1][1] = A_tensor2_voigtshape[1]
+	A_tensor2_matrix[2][2] = A_tensor2_voigtshape[2]
+		
+	A_tensor2_matrix[1][2] = A_tensor2_voigtshape[3]/sqrt(2)
+	A_tensor2_matrix[2][1] = A_tensor2_voigtshape[3]/sqrt(2)
+		
+	A_tensor2_matrix[2][0] = A_tensor2_voigtshape[4]/sqrt(2)
+	A_tensor2_matrix[0][2] = A_tensor2_voigtshape[4]/sqrt(2)
+		
+	A_tensor2_matrix[0][1] = A_tensor2_voigtshape[5]/sqrt(2)
+	A_tensor2_matrix[1][0] = A_tensor2_voigtshape[5]/sqrt(2)
+	
+	return A_tensor2_matrix
+	
+	
+def voigt_to_matrix( A_tensor2_matrix ):
+	A_tensor2_voigt = initTensor(0, 6)
+	
+	A_tensor2_voigt[0] = A_tensor2_matrix[0][0]
+	A_tensor2_voigt[1] = A_tensor2_matrix[1][1]
+	A_tensor2_voigt[2] = A_tensor2_matrix[2][2]
+	
+	A_tensor2_voigt[3] = A_tensor2_matrix[1][2]*sqrt(2)
+	A_tensor2_voigt[4] = A_tensor2_matrix[2][0]*sqrt(2)
+	A_tensor2_voigt[5] = A_tensor2_matrix[0][1]*sqrt(2)
+	
+	return A_tensor2_voigt

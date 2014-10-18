@@ -104,8 +104,83 @@ def problem4():
 	for i in range(0,3):
 		print result[i]
 	
+def problem10():
+	S_voigt4 = initTensor( 0, 6, 6)
+	El = 180 #GPa
+	Et = 10 #GPa
+	NuL = 0.28
+	NuT = 0.4
+	Gl = 7 #GPa
+	#Axis x fiber direction
+
+	S_voigt4[0][0] = 1./El
+	S_voigt4[0][1] = -NuL/El
+	S_voigt4[0][2] = -NuL/El
+	
+	S_voigt4[1][0] = -NuL/El
+	S_voigt4[1][1] = 1./Et
+	S_voigt4[1][2] = -NuT/Et
+	
+	S_voigt4[2][0] = -NuL/El
+	S_voigt4[2][1] = -NuT/Et
+	S_voigt4[2][2] = 1./Et
+	
+	S_voigt4[3][3] = (1.-NuT)/Et
+	S_voigt4[4][4] = 1./(2*Gl)
+	S_voigt4[5][5] = 1./(2*Gl)
+	
+	print "S_voigt4 = "
+	for i in range(0, len(S_voigt4[0]) ):
+		print S_voigt4[i]
 		
+	print "Now let's create P"	
+	
+	P = initTensor(0, 3, 3)
+	#Rotation around Z by +37deg
+	P[0][0] = cos(37*(pi/180))
+	P[0][1] = -sin(37*(pi/180))
+	P[0][2] = 0
+	
+	P[1][0] = sin(37*(pi/180))
+	P[1][1] = cos(37*(pi/180))
+	P[1][2] = 0
+	
+	P[2][0] = 0
+	P[2][1] = 0
+	P[2][2] = 1
+	
+	print "P = "
+	for i in range(0, len(P[0]) ):
+		print P[i]
+	
+	print "Now we need to convert S to a tensor 4"
+	
+	S_tensor4 = voigt4_to_tensor4( S_voigt4 )
+	
+	print "Then we perform a tensorial base change"
+	
+	S_tensor4_in_new_base = tensorial_base_change( P, S_tensor4 )
+	
+	print "We define Sigma the stress matrix"
+	
+	print "Sigma = "
+	stress_matrix = initTensor(0, 3, 3)
+	stress_matrix[0][0] = 100
+	print "Sigma = "
+	for i in range(0, len(stress_matrix[0]) ):
+		print stress_matrix[i]
+	
+	print "We can now deduce the deofrmation which is S:Sigma"
+	deformation_matrix = tensordot( S_tensor4_in_new_base, stress_matrix, 2)
+	
+	print "Convert it to Voigt notations"
+	deformation_voigt = voigt_to_matrix( deformation_matrix )
+	
+	print "Deformation in voigt = "
+	print deformation_voigt
 		
 #problem2()
-problem4()
+#problem4()
 
+#Problem with 10^(-3)
+#problem10()
