@@ -28,4 +28,16 @@ def kronecker( i, j ):
 		return 0.
 		
 
+def deformation_dagger_theory(x, lambdas, stress, time):
+	for i in range(0, len(time)):
+		if i == 0:
+			f = x[0]
+		else:
+			f = f + x[i]*( 1 - exp( -lambads[i]*time[i] ) )
+	#CAREFUL WITH THIS ONE IT ONLY WORKS IF TRACTION AXIS IS 1
+	f = f * stress[0]
+	return f
+
+		
+
 	
