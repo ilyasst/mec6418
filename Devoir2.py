@@ -179,7 +179,8 @@ def problem10():
 	
 	print "Deformation in voigt = "
 	print deformation_voigt
-	
+
+#Also called extract projector parameters from isotropic transverse matrix
 def problem13():
 	S_voigt4 = initTensor(0, 6, 6)
 	
@@ -202,26 +203,33 @@ def problem13():
 	for i in range(0, len(S_voigt4[0])):
 		for j in range(0, len(S_voigt4[0])):
 			S_voigt4[i][j] = pow(10, -6) * S_voigt4[i][j] 
+			
+	print "Initial S is:"
+	for i in range(0, len(S_voigt4[0])):
+		print S_voigt4[i]
 	
-	iT = generate_iT_matrix( 2 )
+	iT = generate_iT_matrix( 0 )
 	
-	EL = generate_EL_tensor( 2 )
+	EL = generate_EL_tensor( 0 )
 	
 	JT = generate_JT_tensor( iT )
 	
-	IT_6 = generate_IT_matrix( 2 )
+	IT_6 = generate_IT_matrix( 0 )
 	
-	KE = generate_KE_tensor( 2, iT  )
+	KE = generate_KE_tensor( 0, iT  )
 	
+	#IT_matrix wille be converted to a tensor in generate_KT_tensor
 	KT = generate_KT_tensor( IT_6, JT  )
 	
 	KL = generate_KL_tensor( KT, KE )
 	
-	F = generate_F_tensor( 2, iT )
+	F_tensor = generate_F_tensor( 0, iT )
 	
-	F_matrix = tensor4_to_voigt4( F )
+	F_matrix = tensor4_to_voigt4( F_tensor )
 	
 	F_matrix_transposed = transpose_matrix( F_matrix )
+	
+	F_tensor_transposed = voigt4_to_tensor4( F_matrix_transposed )
 	
 	print "F_Transposed is then:"
 	for i in range(0, len(F_matrix_transposed[0])):
@@ -229,9 +237,18 @@ def problem13():
 		
 	S_tensor4 = voigt4_to_tensor4( S_voigt4 )
 	alpha = tensor4_contract4_tensor4( EL, S_tensor4 )
-	print alpha
+	print "Alpha =", alpha
+	beta = tensor4_contract4_tensor4( JT, S_tensor4 )
+	print "beta =", beta
+	gamma = tensor4_contract4_tensor4( F_tensor_transposed, S_tensor4 )
+	print "gamma=", gamma
+	gamma_prime = tensor4_contract4_tensor4( F_tensor, S_tensor4 )
+	print "gamma ' =", gamma_prime
+	delta = tensor4_contract4_tensor4( KT, S_tensor4 )/2.
+	print "delta =", delta
+	delta_prime = tensor4_contract4_tensor4( KL, S_tensor4 )/2.
+	print "delta ' =", delta_prime
 		
-
 		
 #problem2()
 #problem4()

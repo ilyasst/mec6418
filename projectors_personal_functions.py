@@ -92,7 +92,7 @@ def generate_JT_tensor( iT ):
 		for j in range( len( JT[0][0][0] ) ):
 			for k in range( len( JT[0][0][0] ) ):
 				for l in range( len( JT[0][0][0] ) ):
-					JT[i][j][k][l]=iT[i][j]*iT[k][l]
+					JT[i][j][k][l]=(1./2.)*iT[i][j]*iT[k][l]
 		
 	print "Thus, JT in voigt notations:"
 	JT_voigt = tensor4_to_voigt4( JT )
@@ -199,6 +199,7 @@ def generate_F_tensor( axis, iT_matrix):
 			for k in range( len( F_tensor[0][0][0] ) ):
 				for l in range( len( F_tensor[0][0][0] ) ):
 					F_tensor[i][j][k][l]=sqrt(2)/2.*(iT_matrix[i][j]*n[k]*n[l]);
+					
 					
 	print "Thus, F in voigt notations:"
 	F_voigt = tensor4_to_voigt4( F_tensor )
