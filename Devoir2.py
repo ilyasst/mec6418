@@ -1,6 +1,7 @@
 from numpy import *
 from tensor_personal_functions import *
 from convenient_objects import *
+from projectors_personal_functions import *
 
 #====================================================
 # Problem 2
@@ -178,9 +179,64 @@ def problem10():
 	
 	print "Deformation in voigt = "
 	print deformation_voigt
+	
+def problem13():
+	S_voigt4 = initTensor(0, 6, 6)
+	
+	S_voigt4[0][0] = 5.56
+	S_voigt4[0][1] = (-1.56)
+	S_voigt4[0][2] = (-1.56)
+	
+	S_voigt4[1][0] = (-1.56)
+	S_voigt4[1][1] = (100.)
+	S_voigt4[1][2] = (-40)
+	
+	S_voigt4[2][0] = (-1.56)
+	S_voigt4[2][1] = (-40.)
+	S_voigt4[2][2] = (100.)
+	
+	S_voigt4[3][3] = (140.)
+	S_voigt4[4][4] = (71.4)
+	S_voigt4[5][5] = (71.4)
+	
+	for i in range(0, len(S_voigt4[0])):
+		for j in range(0, len(S_voigt4[0])):
+			S_voigt4[i][j] = pow(10, -6) * S_voigt4[i][j] 
+	
+	iT = generate_iT_matrix( 2 )
+	
+	EL = generate_EL_tensor( 2 )
+	
+	JT = generate_JT_tensor( iT )
+	
+	IT_6 = generate_IT_matrix( 2 )
+	
+	KE = generate_KE_tensor( 2, iT  )
+	
+	KT = generate_KT_tensor( IT_6, JT  )
+	
+	KL = generate_KL_tensor( KT, KE )
+	
+	F = generate_F_tensor( 2, iT )
+	
+	F_matrix = tensor4_to_voigt4( F )
+	
+	F_matrix_transposed = transpose_matrix( F_matrix )
+	
+	print "F_Transposed is then:"
+	for i in range(0, len(F_matrix_transposed[0])):
+		print F_matrix_transposed[i]
+		
+	S_tensor4 = voigt4_to_tensor4( S_voigt4 )
+	alpha = tensor4_contract4_tensor4( EL, S_tensor4 )
+	print alpha
+		
+
 		
 #problem2()
 #problem4()
 
-#Problem with 10^(-3)
+#PROBLEM with 10^(-3) CHECK IT SOMEDAY !
 #problem10()
+
+problem13()

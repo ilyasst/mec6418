@@ -230,7 +230,7 @@ def generate_trans_matrix( init_base, final_base ):
 			
 	return P
 
-	
+#Scalar product
 def vector_dot_vector( vectora, vectorb ):
 	sumdot = 0
 	for i in range(len(vectora)):
@@ -238,8 +238,6 @@ def vector_dot_vector( vectora, vectorb ):
 		#print vectora[i], " * ", vectorb[i]
 	#print vectora, " times ", vectorb, " = ", sumdot
 	return sumdot
-	
-
 
 #Generate a tensor, any order, any size
 #Value is the default value, commonly 0
@@ -311,3 +309,25 @@ def voigt_to_matrix( A_tensor2_matrix ):
 	A_tensor2_voigt[5] = A_tensor2_matrix[0][1]*sqrt(2)
 	
 	return A_tensor2_voigt
+
+#Square matrix, any size
+def transpose_matrix( A_matrix ):
+	
+	A_transposed = initTensor( 0, len(A_matrix[0]), len(A_matrix[0]) )
+	for i in range( 0, len(A_matrix[0])):
+		for j in range( 0, len(A_matrix[0])):
+			A_transposed[j][i] = A_matrix[i][j]
+			
+	return A_transposed
+	
+def tensor4_contract4_tensor4( A, B ):
+	temp_sum = 0
+	
+	for i in range(0, len(A[0][0][0])):
+		for j in range(0, len(A[0][0][0])):
+			for k in range(0, len(A[0][0][0])):
+				for l in range(0, len(A[0][0][0])):
+					temp_sum = temp_sum + A[i][j][k][l]*B[i][j][k][l]
+					
+	return temp_sum
+
