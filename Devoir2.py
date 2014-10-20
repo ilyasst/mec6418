@@ -2,6 +2,7 @@ from numpy import *
 from tensor_personal_functions import *
 from convenient_objects import *
 from projectors_personal_functions import *
+from numpy.linalg import inv
 
 #====================================================
 # Problem 2
@@ -229,26 +230,54 @@ def problem13():
 	
 	F_matrix_transposed = transpose_matrix( F_matrix )
 	
-	F_tensor_transposed = voigt4_to_tensor4( F_matrix_transposed )
+	#F is no symmetric !
+	F_tensor_transposed = voigt4_to_tensor4_no_symmetry( F_matrix_transposed )
 	
-	print "F_Transposed is then:"
+	print "F_Transposed_voigt is then:"
 	for i in range(0, len(F_matrix_transposed[0])):
 		print F_matrix_transposed[i]
+
 		
 	S_tensor4 = voigt4_to_tensor4( S_voigt4 )
 	alpha = tensor4_contract4_tensor4( EL, S_tensor4 )
 	print "Alpha =", alpha
 	beta = tensor4_contract4_tensor4( JT, S_tensor4 )
 	print "beta =", beta
+	
+	#GAMME IS WRONG
 	gamma = tensor4_contract4_tensor4( F_tensor_transposed, S_tensor4 )
 	print "gamma=", gamma
+	
 	gamma_prime = tensor4_contract4_tensor4( F_tensor, S_tensor4 )
-	print "gamma ' =", gamma_prime
+	print "gamma_prime =", gamma_prime
+	
 	delta = tensor4_contract4_tensor4( KT, S_tensor4 )/2.
 	print "delta =", delta
+	
 	delta_prime = tensor4_contract4_tensor4( KL, S_tensor4 )/2.
-	print "delta ' =", delta_prime
-		
+	print "delta_prime=", delta_prime
+	
+	print "The vector Omega is then:"
+	omega = initTensor( 0., 2, 2 )
+	omega[0][0] = alpha
+	omega[0][1] = gamma_prime
+	omega[1][0] = gamma
+	omega[1][1] = beta
+	print omega
+	
+	omega_inverse = inv( omega )
+	print "And it's inverse is omega_invese:"
+	print omega_inverse
+	
+	print "S-1 ="
+	print omega_inverse[0][0], " * EL"
+	print omega_inverse[1][1], " * JT"
+	print omega_inverse[0][1], " * F_transpose"
+	print omega_inverse[1][0], " * F"
+	print 1./delta, " * KT"
+	print 1./delta_prime, " * KL"
+	
+	
 		
 #problem2()
 #problem4()

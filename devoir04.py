@@ -5,6 +5,8 @@ from projectors_personal_functions import *
 from import_data import *
 import matplotlib.pyplot as plt
 from convenient_objects import *
+from scipy.optimize import curve_fit
+
 
 def exercice01():
 	
@@ -61,13 +63,21 @@ def exercice02():
 	print stress
 	
 	
-	plt.plot(time, deformation11, 'ro', label = "Def11")
+
 	plt.plot( time, deformation22, 'bs', label = "Def22")
 	plt.xlabel('time')
 	plt.title("Stress: 20MPa")
 	plt.ylabel('deformations')
 	plt.legend()
-	plt.savefig('04-02_initial_data.png')
+	plt.savefig('04-02_initial_data_E22.png')
+	plt.close()
+	
+	plt.plot(time, deformation11, 'ro', label = "Def11")
+	plt.xlabel('time')
+	plt.title("Stress: 20MPa")
+	plt.ylabel('deformations')
+	plt.legend()
+	plt.savefig('04-02_initial_data_E11.png')
 	plt.close()
 	
 	print "Check 04-02_initial_data.png for initial data plot"
@@ -86,6 +96,19 @@ def exercice02():
 	deformation_double_dagger = []
 	for i in range(0, len(time)):
 		deformation_double_dagger.append( deformation11[i] + 2*deformation22[i] )
+	
+	betas = []
+	for i in range(0, len(time)):
+		betas.append( 0. )
+	print betas
+	
+	#beta_popt, beta_pcov = curve_fit( mq1, time, deformation_dagger )
+	
+
+def mq1( time, beta ):
+	for i in range(0, len(time)):
+		deformation_dagger[i] - deformation_dagger_theory( x, lambdas, stress, time[i] )
+	return 
 		
 	
 		

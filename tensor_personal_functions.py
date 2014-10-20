@@ -61,7 +61,7 @@ def check_tensor_major_symmetry( tensor ):
 
 
 def tensor4_to_voigt4( A_tensor4 ):
-	A_voigt4 = initTensor(0, 6, 6)
+	A_voigt4 = initTensor(0., 6, 6)
 	
 	#blue
 	for i in range( 0, 3 ):
@@ -103,7 +103,7 @@ def tensor4_to_voigt4( A_tensor4 ):
 #Takes A_voigt(6,6) gives back A_tensor(4,4,4,4), with symmetries
 def voigt4_to_tensor4( A_voigt4 ):
 
-	A_tensor4 = initTensor(0, 3, 3, 3, 3)
+	A_tensor4 = initTensor(0., 3, 3, 3, 3)
 	
 	a = 0
 	b = 0
@@ -187,11 +187,11 @@ def voigt4_to_tensor4( A_voigt4 ):
 				A_tensor4 = apply_minor_sym_to_tensor_term( A_tensor4, ip, jp, kp, lp )
 				A_tensor4 = apply_major_sym_to_tensor_term( A_tensor4, ip, jp, kp, lp )
 			if (flaga is True) and (flagb is False):
-				A_tensor4[ip][jp][k][l]=A_voigt4[a][b]/(sqrt(2))
+				A_tensor4[ip][jp][k][l] = A_voigt4[a][b]/(sqrt(2.))
 				A_tensor4 = apply_minor_sym_to_tensor_term( A_tensor4, ip, jp, k, l )
 				A_tensor4 = apply_major_sym_to_tensor_term( A_tensor4, ip, jp, k, l )
 			if(flagb is True) and (flaga is False):
-				A_tensor4[i][j][kp][lp]=A_voigt4[a][b]/(sqrt(2))
+				A_tensor4[i][j][kp][lp] = A_voigt4[a][b]/(sqrt(2.))
 				A_tensor4 = apply_minor_sym_to_tensor_term( A_tensor4, i, j, kp, lp )
 				A_tensor4 = apply_major_sym_to_tensor_term( A_tensor4, i, j, kp, lp )
 				
@@ -200,6 +200,113 @@ def voigt4_to_tensor4( A_voigt4 ):
 				A_tensor4[i][j][k][l] = A_voigt4[a][b]
 				A_tensor4 = apply_minor_sym_to_tensor_term( A_tensor4, i, j, k, l )
 				A_tensor4 = apply_major_sym_to_tensor_term( A_tensor4, i, j, k, l )
+			
+			#print "A_voigt4[",a ,"][", b, "] = " , "A_tensor4[", i, "][", j, "][", k, "][", l, "]" 
+			#print A_tensor4[i][j][k][l], A_voigt4[a][b]
+			#print "-------------------------------------------------------------------"
+
+	return A_tensor4
+	
+#Takes A_voigt(6,6) gives back A_tensor(4,4,4,4), with symmetries
+def voigt4_to_tensor4_no_symmetry( A_voigt4 ):
+
+	A_tensor4 = initTensor(0., 3, 3, 3, 3)
+	
+	a = 0
+	b = 0
+	A_voigt4_length = len( A_voigt4 )
+	for a in range(0, A_voigt4_length ):
+		for b in range(0, A_voigt4_length ):
+
+			flaga = False
+			flagb = False
+			
+			if (a == 0):
+				i = 0
+				j = 0
+				
+			if (b == 0):
+				k=0
+				l=0
+				
+			if (a == 1):
+				i=1
+				j=1
+				
+			if (b == 1):
+				k=1
+				l=1
+				
+			if (a == 2):
+				i=2
+				j=2
+
+			if (b == 2):
+				k=2
+				l=2
+				
+				
+			if (a == 3):
+				i=0
+				j=1
+				ip=1
+				jp=2
+				flaga= True
+
+			if (b ==3):
+				k=0
+				l=1
+				kp=1
+				lp=2
+				flagb= True	
+
+			if (a == 4):
+				i=1
+				j=2
+				ip=2
+				jp=0
+				flaga= True
+	
+			if (b == 4):
+				k=1
+				l=2
+				kp=2
+				lp=0
+				flagb= True
+	
+			if (a == 5):
+				i=0
+				j=2
+				ip=0
+				jp=1
+				flaga= True
+
+			if (b == 5):
+				k=0
+				l=2
+				kp=0
+				lp=1
+				flagb = True
+			
+			
+			if (flaga is True) and (flagb is True):
+				A_tensor4[ip][jp][kp][lp] = A_voigt4[a][b]/2.
+				#A_tensor4 = apply_minor_sym_to_tensor_term( A_tensor4, ip, jp, kp, lp )
+				#A_tensor4 = apply_major_sym_to_tensor_term( A_tensor4, ip, jp, kp, lp )
+			if (flaga is True) and (flagb is False):
+				A_tensor4[ip][jp][k][l] = A_voigt4[a][b]/(sqrt(2.))
+				#A_tensor4 = apply_minor_sym_to_tensor_term( A_tensor4, ip, jp, k, l )
+				#A_tensor4 = apply_major_sym_to_tensor_term( A_tensor4, ip, jp, k, l )
+			if(flagb is True) and (flaga is False):
+				A_tensor4[i][j][kp][lp] = A_voigt4[a][b]/(sqrt(2.))
+				#A_tensor4 = apply_minor_sym_to_tensor_term( A_tensor4, i, j, kp, lp )
+				#A_tensor4 = apply_major_sym_to_tensor_term( A_tensor4, i, j, kp, lp )
+				
+			if (flaga is False) and (flagb is False):
+			
+				A_tensor4[i][j][k][l] = A_voigt4[a][b]
+				#A_tensor4 = apply_minor_sym_to_tensor_term( A_tensor4, i, j, k, l )
+				#A_tensor4 = apply_major_sym_to_tensor_term( A_tensor4, i, j, k, l )
 			
 			#print "A_voigt4[",a ,"][", b, "] = " , "A_tensor4[", i, "][", j, "][", k, "][", l, "]" 
 			#print A_tensor4[i][j][k][l], A_voigt4[a][b]
@@ -312,14 +419,13 @@ def voigt_to_matrix( A_tensor2_matrix ):
 
 #Square matrix, any size
 def transpose_matrix( A_matrix ):
-	
-	A_transposed = initTensor( 0, len(A_matrix[0]), len(A_matrix[0]) )
+	A_transposed = initTensor( 0., len(A_matrix[0]), len(A_matrix[0]) )
 	for i in range( 0, len(A_matrix[0])):
 		for j in range( 0, len(A_matrix[0])):
 			A_transposed[j][i] = A_matrix[i][j]
-			
 	return A_transposed
-	
+
+
 def tensor4_contract4_tensor4( A, B ):
 	temp_sum = 0
 	
@@ -328,6 +434,30 @@ def tensor4_contract4_tensor4( A, B ):
 			for k in range(0, len(A[0][0][0])):
 				for l in range(0, len(A[0][0][0])):
 					temp_sum = temp_sum + A[i][j][k][l]*B[i][j][k][l]
-					
 	return temp_sum
+
+
+#Put an isotropic tensor in, get alpha and beta to build S_invert
+def extract_isotropic_parameters( S_tensor4 ):
+	
+	J_tensor4 = generate_J_tensor4()
+	
+	I_tensor4 = generate_I_tensor4()
+	
+	K_tensor4 = generate_K_tensor4()
+	
+	alpha = tensor4_contract4_tensor4( J_tensor4 , S_tensor4 )
+	print "Alpha =", alpha
+	beta = tensor4_contract4_tensor4( K_tensor4, S_tensor4 )/5.
+	print "beta =", beta
+	
+	print ""
+	print "To get S_tensor4 invert:"
+	print "S_invert = 1/alpha * J_tensor4 + 1/beta * K_tensor4"
+	print "1/alpha =", 1./alpha
+	print "1/beta =", 1./beta
+	
+	return alpha, beta
+	
+	
 

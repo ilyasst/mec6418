@@ -33,9 +33,9 @@ def deformation_dagger_theory(x, lambdas, stress, time):
 		if i == 0:
 			f = x[0]
 		else:
-			f = f + x[i]*( 1 - exp( -lambads[i]*time[i] ) )
-	#CAREFUL WITH THIS ONE IT ONLY WORKS IF TRACTION AXIS IS 1
-	f = f * stress[0]
+			f = f + x[i]*( 1 - exp( -lambdas[i]*time[i] ) )
+
+	f = f * stress
 	return f
 
 		
