@@ -87,7 +87,7 @@ def exercice02():
 	for i in range(0, len(time)):
 		deformation_double_dagger.append( deformation11[i] + 2*deformation22[i] )
 		
-	popt, pcov = curve_fit(deformation_dagger_theory, time, deformation_dagger)
+	
 		
 	
 	
