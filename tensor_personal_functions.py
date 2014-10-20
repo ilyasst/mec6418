@@ -438,7 +438,9 @@ def tensor4_contract4_tensor4( A, B ):
 
 
 #Put an isotropic tensor in, get alpha and beta to build S_invert
-def extract_isotropic_parameters( S_tensor4 ):
+def extract_isotropic_parameters( S_matrix ):
+	
+	S_tensor4 = voigt4_to_tensor4( S_matrix )
 	
 	J_tensor4 = generate_J_tensor4()
 	
@@ -459,5 +461,57 @@ def extract_isotropic_parameters( S_tensor4 ):
 	
 	return alpha, beta
 	
+#Put an isotropic tensor in, get alpha and beta to build S_invert
+def extract_cubic_parameters( S_matrix ):
 	
+	S_tensor4 = voigt4_to_tensor4( S_matrix )
+	
+	e1 = [ 1., 0., 0. ]
+	e2 = [ 0., 1., 0. ]
+	e3 = [ 0., 0., 1. ]
+	
+	Z_tensor4 = initTensor( 0., 3, 3, 3, 3 )
+	
+	for i in range(0, len(Z_tensor4[0][0][0])):
+		for j in range(0, len(Z_tensor4[0][0][0])):
+			for k in range(0, len(Z_tensor4[0][0][0])):
+				for l in range(0, len(Z_tensor4[0][0][0])):
+					Z_tensor4[i][j][k][l] = e1[i]*e1[j]*e1[k]*e1[l]+e2[i]*e2[j]*e2[k]*e2[l]+e3[i]*e3[j]*e3[k]*e3[l]
 
+	J_tensor4 = generate_J_tensor4()
+	
+	I_tensor4 = generate_I_tensor4()
+	
+	K_tensor4 = generate_K_tensor4()
+	
+	KA_tensor4 = initTensor( 0., 3, 3, 3, 3 )
+	for i in range( len( KA_tensor4[0][0][0] ) ):
+		for j in range( len( KA_tensor4[0][0][0] ) ):
+			for k in range( len( KA_tensor4[0][0][0] ) ):
+				for l in range( len( KA_tensor4[0][0][0] ) ):
+					KA_tensor4[i][j][k][l]= (Z_tensor4[i][j][k][l]-J_tensor4[i][j][k][l])
+					
+	KB_tensor4 = initTensor( 0., 3, 3, 3, 3 )
+	for i in range( len( KB_tensor4[0][0][0] ) ):
+		for j in range( len( KB_tensor4[0][0][0] ) ):
+			for k in range( len( KB_tensor4[0][0][0] ) ):
+				for l in range( len( KB_tensor4[0][0][0] ) ):
+					KB_tensor4[i][j][k][l]= (I_tensor4[i][j][k][l]-Z_tensor4[i][j][k][l])
+					
+					
+	alpha = tensor4_contract4_tensor4( J_tensor4, S_tensor4 )
+	print "Alpha =", alpha
+	beta = tensor4_contract4_tensor4( KA_tensor4, S_tensor4 )
+	print "beta =", beta/2.
+	gamma = tensor4_contract4_tensor4( KB_tensor4, S_tensor4 )
+	print "gamma =", gamma/3.
+	
+	print ""
+	print "S_inv = 1./alpha * J + 1./beta * Ka + 1./gamma * Kb "
+	print "1/alpha = ", 1./alpha
+	print "1/beta = ", 1./beta
+	print "1/gamma = ", 1./gamma
+	
+	return alpha, beta, gamma
+	
+	
