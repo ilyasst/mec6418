@@ -7,51 +7,8 @@ import matplotlib.pyplot as plt
 from convenient_objects import *
 from scipy.optimize import curve_fit
 from scipy.optimize import leastsq
+from lmfit import minimize, Parameters
 
-
-
-def exercice01():
-	
-	time5MPa = []
-	deformation5MPa = []
-	time5MPa, deformation5MPa = import_data_04_01( "04_01_donnees5MPa.csv" )
-	
-	time10MPa = []
-	deformation10MPa = []
-	time10MPa, deformation10MPa = import_data_04_01( "04_01_donnees10MPa.csv" )
-	
-	time15MPa = []
-	deformation15MPa = []
-	time15MPa, deformation15MPa = import_data_04_01( "04_01_donnees15MPa.csv" )
-	
-	time20MPa = []
-	deformation20MPa = []
-	time20MPa, deformation20MPa = import_data_04_01( "04_01_donnees20MPa.csv" )
-	
-	print "Linear means that f(lamba * deformation ) = lambda * stress, with lambda real value"
-	print "And f( deformation1 + deformation2 ) = f(deformation1) + f(deformation2) = stress1 + stress2 "
-	
-
-	
-	print "Let's check it for 5MPa and 10MPa"
-	print "Let's sum deformation5MPa[i]+deformation5MPa[i]:"
-	sum_deformations = []
-	for i in range(0, len(time5MPa)):
-		sum_deformations.append( deformation5MPa[i] + deformation5MPa[i] )
-	print "Deformation 5MPa+5MPa", "Deformation10MPa", "Ratio"
-	for i in range(0, len(time5MPa)):
-		print sum_deformations[i], deformation10MPa[i], sum_deformations[i]/deformation10MPa[i]
-		
-	
-	plt.plot(time5MPa, deformation5MPa, 'ro', label = "Def5MPa")
-	plt.plot(time10MPa, deformation10MPa, 'bo', label = "Def10MPa")
-	plt.plot(time15MPa, deformation15MPa, 'go', label = "Def15MPa")
-	plt.plot(time20MPa, deformation20MPa, 'yo', label = "Def20MPa")
-	plt.xlabel('time')
-	plt.ylabel('deformation')
-	plt.legend()
-	plt.savefig('04-01_initial_data.png')
-	plt.close()
 	
 def exercice02():
 	time = []
@@ -121,10 +78,15 @@ def exercice02():
 		alphas.append( 0. )
 	print alphas
 	alphas = asarray(alphas)
+
 	
 	plsq_beta = leastsq( residuals_beta, betas, args = ( deformation_dagger, time ) )
 	print "PLSQ_Beta:", plsq_beta
 	print "len(PLSQ):", len( plsq_beta[0] )
+	
+	params = Parameters()
+	params.add( 'betas', min = 0.0 )
+	out_beta = minimize( residuals_beta, params, args = ( deformation_dagger, time ) )
 	
 	plsq_alpha = leastsq( residuals_alpha, alphas, args = ( deformation_double_dagger, time ) )
 	print "PLSQ_Alpha:", plsq_alpha
@@ -132,7 +94,7 @@ def exercice02():
 	
 	
 	
-def residuals_beta( x, deformation_dagger, time ):
+def residuals_beta( params, x, deformation_dagger, time ):
 	err = []
 	for i in range(0, len(time)):
 		print "Residuals, i: ", i
@@ -181,6 +143,4 @@ def deformation_dagger_theory( time, x ):
 	return f
 	
 	
-	
-#exercice01()
 exercice02()
