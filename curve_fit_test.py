@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import curve_fit
+from scipy.optimize import curve_fit, minimize
 import matplotlib.pyplot as plt
 
 def func(x, a, b, c):
@@ -26,4 +26,6 @@ plt.close()
 popt, pcov = curve_fit(func, xdata, ydata)
 
 print popt
-print pcov
+
+res = minimize( func, ( 1., 1., 1. ), method = 'SLSQP', bounds = ((0., None), (0., None), (0., None)) )
+print res
