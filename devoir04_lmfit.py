@@ -5,9 +5,9 @@ from projectors_personal_functions import *
 from import_data import *
 import matplotlib.pyplot as plt
 from convenient_objects import *
-from scipy.optimize import curve_fit
-from scipy.optimize import leastsq
-from lmfit import minimize, Parameters
+from scipy.optimize import curve_fit, fmin_slsqp
+from scipy.optimize import leastsq, minimize
+
 
 	
 def exercice02():
@@ -68,7 +68,7 @@ def exercice02():
 	print "Initial values betas:"
 	betas = []
 	for i in range(0, 60, 5):
-		betas.append( 0. )
+		betas.append( 1. )
 	print betas
 	betas = asarray(betas)
 	
@@ -80,27 +80,39 @@ def exercice02():
 	alphas = asarray(alphas)
 
 	
-	plsq_beta = leastsq( residuals_beta, betas, args = ( deformation_dagger, time ) )
-	print "PLSQ_Beta:", plsq_beta
-	print "len(PLSQ):", len( plsq_beta[0] )
+	#plsq_beta = leastsq( residuals_beta, betas, args = ( deformation_dagger, time ) )
+	#print "PLSQ_Beta:", plsq_beta
+	#print "len(PLSQ):", len( plsq_beta[0] )
+
+	#res_beta = minimize( residuals_beta, betas, args = ( deformation_dagger, time ), method = 'SLSQP' )
+	#print "res_Beta:", res
+	#print "res_Beta_x:", res.x
+	#print "res(PLSQ):", len( res )
 	
-	params = Parameters()
-	params.add( 'betas', min = 0.0 )
-	out_beta = minimize( residuals_beta, params, args = ( deformation_dagger, time ) )
+	fmin_slsqp_beta = fmin_slsqp( residuals_beta_fmin, betas, args = ( deformation_dagger, time ), bounds = [[0, 100000]]*len(betas) )
+	print "fmin_slsqp_beta:", fmin_slsqp_beta
+	print "res(fmin_slsqp_beta):", len( fmin_slsqp_beta )
 	
-	plsq_alpha = leastsq( residuals_alpha, alphas, args = ( deformation_double_dagger, time ) )
-	print "PLSQ_Alpha:", plsq_alpha
-	print "len(PLSQ):", len( plsq_alpha[0] )
+	#plsq_alpha = leastsq( residuals_alpha, alphas, args = ( deformation_double_dagger, time ) )
+	#print "PLSQ_Alpha:", plsq_alpha
+	#print "len(PLSQ):", len( plsq_alpha[0] )
 	
 	
 	
-def residuals_beta( params, x, deformation_dagger, time ):
+def residuals_beta( x, deformation_dagger, time ):
 	err = []
 	for i in range(0, len(time)):
 		print "Residuals, i: ", i
 		err.append( deformation_dagger[i] - deformation_dagger_theory( time[i], x ) )
 		print "residual : ", deformation_dagger[i] - deformation_dagger_theory( time[i], x )
 	return asarray( err )
+
+def residuals_beta_fmin( x, deformation_dagger, time ):
+	err = 0
+	for i in range(0, len(time)):
+		print "Residuals, i: ", i
+		err = err + pow( ( deformation_dagger[i] - deformation_dagger_theory( time[i], x ) ), 2 )
+	return err
 	
 def residuals_alpha( x, deformation_double_dagger, time ):
 	err = []
