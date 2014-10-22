@@ -369,6 +369,19 @@ def matrix_dot_matrix( matrixa, matrixb ):
 				C[i][j] = C[i][j] + matrixa[i][k]*matrix[k][j]
 	return C
 
+
+def matrix_dot_vector( matrixa, vector ):
+	C = initTensor( 0, len(matrixa[0]), len(vector))
+	if (len(matrixa[0]) != len(vector)):
+	     print "This is not good... You're trying to perform a matrix dot vector with impossiburu dimensions!!"
+	     
+	for i in range( len(matrixa) ):
+		for j in range( len(matrixa[0])):
+			for k in range( len( vector )):
+				C[i][j] = C[i][j] + matrixa[i][k]*vector[k]
+	return C
+
+
 def tensorial_base_change( P, tensorA ):
 	tensorB = initTensor( 0, 3, 3, 3, 3)
 	for m in range( len( tensorA[0][0][0] ) ):

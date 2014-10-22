@@ -63,31 +63,26 @@ def exercice02():
 	
 	print "Stress:"
 	stress = initTensor(0., 6)
-	stress[0] = 20
+	stress[0] = 20.
 	print stress
+	
+	lambdas = []
+	for i in range(0, 60, 5):
+		lambdas.append( float( 1./pow(10, float(i)/10.) ) )
 	
 	
 
 	plt.plot( time, deformation22, 'bs', label = "Def22")
-	plt.xlabel('time')
-	plt.title("Stress: 20MPa")
-	plt.ylabel('deformations')
-	plt.legend()
-	plt.savefig('04-02_initial_data_E22.png')
-	plt.close()
-	
 	plt.plot(time, deformation11, 'ro', label = "Def11")
 	plt.xlabel('time')
 	plt.title("Stress: 20MPa")
 	plt.ylabel('deformations')
 	plt.legend()
-	plt.savefig('04-02_initial_data_E11.png')
+	plt.savefig('04-02_initial_data.png')
 	plt.close()
 	
 	print "Check 04-02_initial_data.png for initial data plot"
-	
-	
-	
+
 		
 	print "Determining list deformation dagger..."
 	deformation_dagger = []
@@ -100,14 +95,14 @@ def exercice02():
 	for i in range(0, len(time)):
 		deformation_double_dagger.append( deformation11[i] + 2*deformation22[i] )
 		
-	plt.plot( time, deformation_dagger, 'bs', label = "Def_dagger_exp")
-	plt.plot(time, deformation_double_dagger, 'ro', label = "Def_double_dagger_exp")
-	plt.xlabel('time')
-	plt.title("Stress: 20MPa")
-	plt.ylabel('deformations')
-	plt.legend()
-	plt.savefig('04_02_Def_daggers.png')
-	plt.close()
+	#plt.plot( time, deformation_dagger, 'bs', label = "Def_dagger_exp")
+	#plt.plot(time, deformation_double_dagger, 'ro', label = "Def_double_dagger_exp")
+	#plt.xlabel('time')
+	#plt.title("Stress: 20MPa")
+	#plt.ylabel('deformations')
+	#plt.legend()
+	#plt.savefig('04_02_Def_daggers.png')
+	#plt.close()
 	
 	print "Initial values betas:"
 	betas = []
@@ -133,14 +128,14 @@ def exercice02():
 	#print "res_Beta_x:", res.x
 	#print "res(PLSQ):", len( res )
 	
-	fmin_slsqp_beta = fmin_slsqp( residuals, betas, args = ( deformation_dagger, time ), bounds = [[0., inf]]*len(betas) )
+	fmin_slsqp_beta = fmin_slsqp( residuals, betas, args = ( deformation_dagger, time, stress, lambdas ), bounds = [[0., inf]]*len(betas) )
 	print "fmin_slsqp_beta:"
 	for i in range(len(fmin_slsqp_beta)):
 		print "beta", i, fmin_slsqp_beta[i]
 	print "res(fmin_slsqp_beta):", len( fmin_slsqp_beta )
 	
 	
-	fmin_slsqp_alpha = fmin_slsqp( residuals, alphas, args = ( deformation_double_dagger, time ), bounds = [[0., inf]]*len(alphas) )
+	fmin_slsqp_alpha = fmin_slsqp( residuals, alphas, args = ( deformation_double_dagger, time, stress, lambdas ), bounds = [[0., inf]]*len(alphas) )
 	print "fmin_slsqp_alpha:"
 	for i in range(len(fmin_slsqp_alpha)):
 		print "alpha", i, fmin_slsqp_alpha[i]
@@ -153,13 +148,14 @@ def exercice02():
 	
 	deformation_dagger_theory_list = []
 	for i in range(0, len(time)):
-		deformation_dagger_theory_list.append( deformation_dagger_theory( time[i], fmin_slsqp_beta ) )
-		print deformation_dagger_theory( time[i], fmin_slsqp_beta ), deformation_dagger[i]
+		#print deformation_dagger_theory( stress, lambdas, time[i], fmin_slsqp_beta ) - deformation_double_dagger[i]
+		deformation_dagger_theory_list.append( deformation_dagger_theory( stress, lambdas, time[i], fmin_slsqp_beta ) )
+
 		
 	deformation_double_dagger_theory_list = []
 	for i in range(0, len(time)):
-		deformation_double_dagger_theory_list.append( deformation_dagger_theory( time[i], fmin_slsqp_alpha ) )
-		print deformation_dagger_theory( time[i], fmin_slsqp_alpha ), deformation_dagger[i]
+		#print deformation_dagger_theory( stress, lambdas, time[i], fmin_slsqp_alpha ) - deformation_dagger[i]
+		deformation_double_dagger_theory_list.append( deformation_dagger_theory( stress, lambdas, time[i], fmin_slsqp_alpha ) )
 		
 	plt.plot( time, deformation_dagger, 'bs', label = "Def_dagger_exp")
 	plt.plot( time, deformation_dagger_theory_list, 'b--', label = "Def_dagger_theo")
@@ -171,21 +167,77 @@ def exercice02():
 	plt.legend()
 	plt.savefig('04_02_Def_dagger_th_VS_exp.png')
 	plt.close()
-
-def residuals( x, deformation_dagger, time ):
-	err = 0
+	
+	epstheorique = initTensor(0., len(time), 6 ) 
+	epstheorique = determine_epstheorique( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, stress, time)
+	
+	eps11_th = []
+	eps22_th = []
+	print "Eps_theorique11,", "Eps_theorique22,"
 	for i in range(0, len(time)):
-		err = err + pow( ( deformation_dagger[i] - deformation_dagger_theory( time[i], x ) ), 2 )
+		eps11_th.append( epstheorique[i][0] )
+		eps22_th.append( epstheorique[i][1] )
+		print epstheorique[i][0]-deformation11[i], epstheorique[i][1]-deformation22[i]
+
+	plt.plot( time, eps11_th, 'b--', label = "Def11_th")
+	plt.plot( time, deformation11, 'bs', label = "Def11_exp")
+	plt.plot( time, eps22_th, 'r--', label = "Def22_th")
+	plt.plot( time, deformation22, 'rs', label = "Def22_exp")
+	plt.xlabel('time')
+	plt.title("Stress: 20MPa")
+	plt.ylabel('deformations')
+	plt.legend()
+	plt.savefig('04_02_Eps_th_VS_exp.png')
+	plt.close()
+
+def determine_epstheorique( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, stress, time):
+	epstheorique = initTensor( 0., len(time), 6 )
+	for i in range(0, len(time) ):
+		s = initTensor(0., 6, 6 )
+		s = souplesse_fluage_iso( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, time[i] )
+
+		for j in range(0, 6):
+			for k in range(0, 6):
+				epstheorique[i][j] = epstheorique[i][j] + s[j][k]*stress[k]
+		print "Time: i", epstheorique[i]
+	return epstheorique
+		
+
+def souplesse_fluage_iso( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, time_scalar ):
+
+	s = initTensor( 0., 6, 6 )
+
+	J_tensor4 = generate_J_tensor4()
+	J_matrix4 = tensor4_to_voigt4( J_tensor4 )
+	
+	K_tensor4 = generate_K_tensor4()
+	K_matrix4 = tensor4_to_voigt4( K_tensor4 )
+	
+	for i in range(0, len(s[0]) ):
+		for j in range(0, len(s[0]) ):
+			for k in range(0, len(fmin_slsqp_alpha) ):
+				if k == 1:
+					s[i][j] = fmin_slsqp_alpha[k]*J_matrix4[i][j] + fmin_slsqp_beta[k]*K_matrix4[i][j]
+				else:
+					s[i][j] = s[i][j] + ( (1 - exp( - lambdas[k]*time_scalar))*fmin_slsqp_alpha[k])*J_matrix4[i][j] + ( (1 - exp( - lambdas[k]*time_scalar))*fmin_slsqp_beta[k])*K_matrix4[i][j]
+
+	return s
+
+
+def residuals( x, deformation_dagger, time, stress, lambdas ):
+	err = 0
+	for i in range( 0, len(time) ):
+		err = err + pow( ( deformation_dagger[i] - deformation_dagger_theory( stress, lambdas, time[i], x ) ), 2 )
 	return err
 	
-def deformation_dagger_theory( time, x ):
+def deformation_dagger_theory( stress, lambdas, time, x ):
 	
-	lambdas = []
-	for i in range(0, 60, 5):
-		lambdas.append( float( 1./pow(10, float(i)/10.) ) )
+	#lambdas = []
+	#for i in range(0, 60, 5):
+		#lambdas.append( float( 1./pow(10, float(i)/10.) ) )
 
-	stress = initTensor(0., 6)
-	stress[0] = 20.
+	#stress = initTensor(0., 6)
+	#stress[0] = 20.
 	#print stress
 	
 	for i in range(0, len(lambdas)):
@@ -202,5 +254,5 @@ def deformation_dagger_theory( time, x ):
 	return f
 	
 	
-exercice01()
+#exercice01()
 exercice02()
