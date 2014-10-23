@@ -27,6 +27,13 @@ def kronecker( i, j ):
 	else:
 		return 0.
 		
+def indentity12_12():
+	I = initTensor(0., 12, 12)
+	
+	for i in range(0, 12):
+		I[i][i] = 1.
+		
+	return I
 
 
 		

@@ -77,7 +77,7 @@ def problem4():
 	# epsilon_ijk[i][j][k]*epsilon_ijk[i][j][k] ?
 	
 	result = 0
-	
+
 	for i in range(0, 3):
 		for j in range(0, 3):
 			for k in range(0, 3):
@@ -276,7 +276,29 @@ def problem13():
 	print omega_inverse[1][0], " * F"
 	print 1./delta, " * KT"
 	print 1./delta_prime, " * KL"
+
+def problem06():
 	
+	init_base = [ [ 1, 0, 0],
+		[ 0, 1, 0],
+		[ 0, 0, 1]
+		]
+
+	final_base = initTensor( random.random_sample(), 3, 3 )
+
+	P = generate_trans_matrix( init_base, final_base )
+
+	rand_tensor = initTensor( random.random_sample(), 3, 3, 3, 3 )
+	rand_matrix = tensor4_to_voigt4( rand_tensor)
+	initial_trace = trace( rand_matrix )
+	
+	print "Initial trace:", initial_trace
+	
+	rand_tensor_base_changed = tensorial_base_change( P, rand_tensor )
+	rand_matrix_base_changed = tensor4_to_voigt4( rand_tensor_base_changed )
+	trace_after_rand_base_change = trace( rand_matrix_base_changed )
+	
+	print "trace_after_rand_base_change:", trace_after_rand_base_change
 	
 		
 #problem2()
@@ -285,4 +307,7 @@ def problem13():
 #PROBLEM with 10^(-3) CHECK IT SOMEDAY !
 #problem10()
 
-problem13()
+#problem13()
+
+#CA MARCHE PAS
+problem06()
