@@ -66,9 +66,12 @@ def exercice02():
 	stress[0] = 20.
 	print stress
 	
+	print "LAMBDAS:"
 	lambdas = []
 	for i in range(0, 60, 5):
 		lambdas.append( float( 1./pow(10, float(i)/10.) ) )
+	print lambdas
+	print "Len(lambas):", len(lambdas)
 	
 	
 
@@ -196,9 +199,8 @@ def determine_epstheorique( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, stress, 
 		s = initTensor(0., 6, 6 )
 		s = souplesse_fluage_iso( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, time[i] )
 
-		for j in range(0, 6):
-			for k in range(0, 6):
-				epstheorique[i][j] = epstheorique[i][j] + s[j][k]*stress[k]
+
+		epstheorique[i] =  dot(s, stress)
 		print "Time: i", epstheorique[i]
 	return epstheorique
 		
@@ -216,7 +218,7 @@ def souplesse_fluage_iso( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, time_scala
 	for i in range(0, len(s[0]) ):
 		for j in range(0, len(s[0]) ):
 			for k in range(0, len(fmin_slsqp_alpha) ):
-				if k == 1:
+				if k == 0:
 					s[i][j] = fmin_slsqp_alpha[k]*J_matrix4[i][j] + fmin_slsqp_beta[k]*K_matrix4[i][j]
 				else:
 					s[i][j] = s[i][j] + ( (1 - exp( - lambdas[k]*time_scalar))*fmin_slsqp_alpha[k])*J_matrix4[i][j] + ( (1 - exp( - lambdas[k]*time_scalar))*fmin_slsqp_beta[k])*K_matrix4[i][j]
