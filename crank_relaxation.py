@@ -103,7 +103,7 @@ def crankn_relaxation(time_length, n, deformation, k0, k1, k2, u0, u1, u2, w1, w
 	for i in range( 1, n ):
 		temp_def = []
 		for j in range(0, 6):
-			#temp_def.append( deformation[i][j] + deformation[i-1][j] ) 
+			temp_def.append( deformation[i][j] + deformation[i-1][j] ) 
 		#print "temp_def;"
 		#print temp_def, len(temp_def) 
 		
