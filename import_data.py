@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import csv
 import os
+from tensor_personal_functions import initTensor
 
 def import_data_04_01( file_name ):
 	i = 0
@@ -39,3 +40,28 @@ def import_data_04_02( file_name ):
 				deformation22.append( float(row[2]) )
 
 	return time, deformation11, deformation22
+
+
+def import_data_05_04( file_name ):
+	i = 0
+	time = []
+	
+	with open( file_name, 'rb') as csvfile:
+		spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+		total_lines = 0
+		for line in spamreader:
+			total_lines = total_lines + 1
+		stress = initTensor(0, total_lines, 6)
+		print "The file contains", total_lines, "lines."
+		
+		csvfile.seek(0)
+		for row in spamreader:
+			if i == 0:
+				i = i + 1
+				pass
+			else:
+				time.append( float(row[0]) )
+				for j in range(0, 6):
+					stress[i-1][j] = float(row[j+1])
+				i = i + 1		
+	return time, stress

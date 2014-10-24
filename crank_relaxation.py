@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 #h les pas de temps: 10, 100, 1000
 #t = duree
 
-def implicit_euler_relaxation(time_length, n, deformation, k0, k1, k2, u0, u1, u2, w1, w2):
+def crankn_relaxation(time_length, n, deformation, k0, k1, k2, u0, u1, u2, w1, w2):
 	#wi et lambdaio are positive
 	print "================================================================================"
 	print "================================================================================"
@@ -16,7 +16,6 @@ def implicit_euler_relaxation(time_length, n, deformation, k0, k1, k2, u0, u1, u
 	print "time_length=", time_length
 	h = float(time_length)/float(n)
 	print "h=", h 
-
 	J_tensor4 = generate_J_tensor4()
 	
 	I_tensor4 = generate_I_tensor4()
@@ -80,16 +79,16 @@ def implicit_euler_relaxation(time_length, n, deformation, k0, k1, k2, u0, u1, u
 	#B = Identity
 	B = indentity12_12()
 
-	#W1 and W2
+	#W1 and W2 CranckN
 	W1_matrix = initTensor(0., 12, 12)
-	W1_matrix = inv( B + dot(h, dot( B, L3 ) ) )
-	print "W1 = inverse( B + h * B * L3 )"
+	W1_matrix = dot( inv( B + dot(h/2., dot( B, L3 ) ) ) , ( B - dot( dot( h/2., B ), L3 ) ) )
+	print "W1 = inverse( B + h/2 * B * L3 ) * ( B - h/2 * B * L3 ) "
 	for i in range(0, 12):
 		print W1_matrix[i]
 		
 	W2_matrix = initTensor(0., 12, 12)
-	W2_matrix = dot( dot( dot(-h, inv( B + dot(h, dot( B, L3 ) ) ) ),  inv(B) ),  transpose(L2))
-	print "W2 = - h * inverse( B + h * B * L3 ) * inverse(B) *transpose( L2 ) "
+	W2_matrix = dot( dot( dot(-1.*(h/2.), inv( B + dot((h/2.), dot( B, L3 ) ) )),  inv(B)),  transpose(L2))
+	print "W2 = - h/2 * inverse( B + h/2 * B * L3 ) * inverse(B) *transpose( L2 ) "
 	print "Len( W2 ) =", len(W2_matrix), " * ", len(W2_matrix[0])
 	for i in range(0, 12):
 		print W2_matrix[i]
@@ -98,14 +97,19 @@ def implicit_euler_relaxation(time_length, n, deformation, k0, k1, k2, u0, u1, u
 	x = initTensor( 0., n, 12 )
 	stress = initTensor( 0., n, 6 ) 
 	print "len(deformation[0]):", len(deformation[0])
-	
 	x[0] = dot( W2_matrix, deformation[0] )
 	stress[0] = dot( L1, deformation[0] ) + dot( L2, x[0] )
 	
 	for i in range( 1, n ):
-		x[i] = dot( W1_matrix, x[i-1] ) + dot( W2_matrix, deformation[i] )
+		temp_def = []
+		for j in range(0, 6):
+			#temp_def.append( deformation[i][j] + deformation[i-1][j] ) 
+		#print "temp_def;"
+		#print temp_def, len(temp_def) 
+		
+		x[i] = dot( W1_matrix, x[i-1] ) + dot( W2_matrix, ( temp_def ) )
 		stress[i] = dot( L1, deformation[i] ) + dot( L2, x[i] )
-	
+
 	return stress
 
 
@@ -114,11 +118,12 @@ eps0 = 0.01
 
 n = 10
 h = float(time_length)/float(n)
+
 #Creation du vecteur de deformaion constant au cours du temps
 deformation = initTensor(0., n, 6)
 for i in range(0, n):
 	deformation[i][0] = eps0
-stress_10 = implicit_euler_relaxation( time_length, n, deformation, 10., 10., 6., 4., 4., 1., 0.1, 0.0116 )
+stress_10 = crankn_relaxation( time_length, n, deformation, 10., 10., 6., 4., 4., 1., 0.1, 0.0116 )
 stress11_10 = []
 time10 = []
 for i in range(0, len(stress_10)):
@@ -132,7 +137,7 @@ h = float(time_length)/float(n)
 deformation = initTensor(0., n, 6)
 for i in range(0, n):
 	deformation[i][0] = eps0
-stress_100 = implicit_euler_relaxation( time_length, n, deformation, 10., 10., 6., 4., 4., 1., 0.1, 0.0116 )
+stress_100 = crankn_relaxation( time_length, n, deformation, 10., 10., 6., 4., 4., 1., 0.1, 0.0116 )
 stress11_100 = []
 time100 = []
 for i in range(0, len(stress_100)):
@@ -146,13 +151,13 @@ h = float(time_length)/float(n)
 deformation = initTensor(0., n, 6)
 for i in range(0, n):
 	deformation[i][0] = eps0
-stress_1000 = implicit_euler_relaxation( time_length, n, deformation, 10., 10., 6., 4., 4., 1., 0.1, 0.0116 )
+stress_1000 = crankn_relaxation( time_length, n, deformation, 10., 10., 6., 4., 4., 1., 0.1, 0.0116 )
 stress11_1000 = []
 time1000 = []
 for i in range(0, len(stress_1000)):
 	time1000.append( float(i)*h )
 	stress11_1000.append( stress_1000[i][0] )
-	#print "Stress", i, time1000[i], stress11_1000[i]
+	print "Stress", i, time1000[i], stress11_1000[i]
 
 	
 plt.plot( time10, stress11_10, 'b--', label = "stress11_n=10")
@@ -162,5 +167,5 @@ plt.xlabel('time')
 plt.title("Stress")
 plt.ylabel('stress')
 plt.legend()
-plt.savefig('05_01_euler-implicite.png')
+plt.savefig('05_01_cranckn.png')
 plt.close()

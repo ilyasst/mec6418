@@ -6,7 +6,7 @@ from import_data import import_data_05_04
 import matplotlib.pyplot as plt
 
 
-def implicit_euler_fluage(time_length, n, stress, k_0, k_1, k_2, u_0, u_1, u_2, lambda1, lambda2):
+def crankn_fluage(time_length, n, stress, k_0, k_1, k_2, u_0, u_1, u_2, lambda1, lambda2):
 	#wi et lambdaio are positive
 	print "================================================================================"
 	print "================================================================================"
@@ -14,7 +14,6 @@ def implicit_euler_fluage(time_length, n, stress, k_0, k_1, k_2, u_0, u_1, u_2, 
 	print "time_length=", time_length
 	h = float(time_length)/float(n)
 	print "h=", h 
-	
 	
 	J_tensor4 = generate_J_tensor4()
 	
@@ -77,14 +76,15 @@ def implicit_euler_fluage(time_length, n, stress, k_0, k_1, k_2, u_0, u_1, u_2, 
 	
 	#W1 and W2
 	W1_matrix = initTensor(0., 12, 12)
-	W1_matrix = inv( B + dot(h, dot( B, A3 ) ) )
-	print "W1 = inverse( B + h * B * A3 )"
+	W1_matrix = dot( inv( B + dot(h/2., dot( B, A3 ) ) ) , ( B - dot( dot( h/2., B ), A3 ) ) )
+	print "W1 = inverse( B + h/2 * B * L3 ) * ( B - h/2 * B * L3 ) "
 	for i in range(0, 12):
 		print W1_matrix[i]
 		
 	W2_matrix = initTensor(0., 12, 12)
-	W2_matrix = dot( dot( dot(-h, inv( B + dot(h, dot( B, A3 ) ) ) ),  inv(B) ),  transpose(A2))
-	print "W2 = - h * inverse( B + h * B * A3 ) * inverse(B) *transpose( A2 ) "
+	
+	W2_matrix = dot( dot( dot(-1.*(h/2.), inv( B + dot((h/2.), dot( B, A3 ) ) )),  inv(B)),  transpose(A2))
+	print "W2 = - h/2 * inverse( B + h/2 * B *A3 ) * inverse(B) *transpose( A2 ) "
 	print "Len( W2 ) =", len(W2_matrix), " * ", len(W2_matrix[0])
 	for i in range(0, 12):
 		print W2_matrix[i]
@@ -102,8 +102,16 @@ def implicit_euler_fluage(time_length, n, stress, k_0, k_1, k_2, u_0, u_1, u_2, 
 	print deformation[0][0], x[0][0]
 	
 	for i in range( 1, n ):
-		x[i] = dot( W1_matrix, x[i-1] ) + dot( W2_matrix, stress[i] )
+		temp_stress = []
+		for j in range(0, 6):
+			temp_stress.append( stress[i][j] + stress[i-1][j] ) 
+		#print "temp_stress;"
+		#print temp_stress, len(temp_stress) 
+		
+		x[i] = dot( W1_matrix, x[i-1] ) + dot( W2_matrix, ( temp_stress ) )
 		deformation[i] = dot( A1, stress[i] ) - dot( A2, x[i] )
+
+		print deformation[i][0], deformation[i][1], deformation[i][2], x[i][0]
 
 	return deformation
 
@@ -127,16 +135,17 @@ time_length = time[n-1]
 #print "n =", n
 #print "TIME=", time[len(time)-1]
 
-deformation = implicit_euler_fluage(time_length, n, stress, k_0, k_1, k_2, u_0, u_1, u_2, lambda1, lambda2)
+deformation = crankn_fluage(time_length, n, stress, k_0, k_1, k_2, u_0, u_1, u_2, lambda1, lambda2)
 
 deformation11 = []
 for i in range(0, len(deformation)):
 	deformation11.append( deformation[i][0] )
 
+print "lengths:", len(time), len(deformation11)
 plt.plot( time, deformation11, 'b--', label = "deformation")
 plt.xlabel('time')
 plt.title("05-06-histoire-contrainte")
 plt.ylabel('deformation')
 plt.legend()
-plt.savefig('05_04_euler_imp.png')
+plt.savefig('05_04_crankn_fluage.png')
 plt.close()

@@ -9,6 +9,68 @@ from scipy.optimize import fmin_slsqp
 from scipy.optimize import leastsq
 
 
+def determine_epstheorique( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, stress, time):
+	epstheorique = initTensor( 0., len(time), 6 )
+	for i in range(0, len(time) ):
+		s = initTensor(0., 6, 6 )
+		s = souplesse_fluage_iso( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, time[i] )
+
+
+		epstheorique[i] =  dot(s, stress)
+		print "Time: i", epstheorique[i]
+	return epstheorique
+		
+
+def souplesse_fluage_iso( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, time_scalar ):
+
+	s = initTensor( 0., 6, 6 )
+
+	J_tensor4 = generate_J_tensor4()
+	J_matrix4 = tensor4_to_voigt4( J_tensor4 )
+	
+	K_tensor4 = generate_K_tensor4()
+	K_matrix4 = tensor4_to_voigt4( K_tensor4 )
+	
+	for i in range(0, len(s[0]) ):
+		for j in range(0, len(s[0]) ):
+			for k in range(0, len(fmin_slsqp_alpha) ):
+				if k == 0:
+					s[i][j] = fmin_slsqp_alpha[k]*J_matrix4[i][j] + fmin_slsqp_beta[k]*K_matrix4[i][j]
+				else:
+					s[i][j] = s[i][j] + ( (1 - exp( - lambdas[k]*time_scalar))*fmin_slsqp_alpha[k])*J_matrix4[i][j] + ( (1 - exp( - lambdas[k]*time_scalar))*fmin_slsqp_beta[k])*K_matrix4[i][j]
+
+	return s
+
+
+def residuals( x, deformation_dagger, time, stress, lambdas ):
+	err = 0
+	for i in range( 0, len(time) ):
+		err = err + pow( ( deformation_dagger[i] - deformation_dagger_theory( stress, lambdas, time[i], x ) ), 2 )
+	return err
+	
+def deformation_dagger_theory( stress, lambdas, time, x ):
+	
+	#lambdas = []
+	#for i in range(0, 60, 5):
+		#lambdas.append( float( 1./pow(10, float(i)/10.) ) )
+
+	#stress = initTensor(0., 6)
+	#stress[0] = 20.
+	#print stress
+	
+	for i in range(0, len(lambdas)):
+		if x[i] < 0.:
+			x[i] = x[i]*x[i]
+	
+	for i in range(0, len(lambdas)):
+		if i == 0:
+			f = x[0]
+		else:
+			f = f + x[i] * (1. - exp( -lambdas[i]* time  ) )
+	f = f * stress[0]
+	
+	return f
+
 
 def exercice01():
 	
@@ -192,68 +254,21 @@ def exercice02():
 	plt.legend()
 	plt.savefig('04_02_Eps_th_VS_exp.png')
 	plt.close()
-
-def determine_epstheorique( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, stress, time):
-	epstheorique = initTensor( 0., len(time), 6 )
-	for i in range(0, len(time) ):
-		s = initTensor(0., 6, 6 )
-		s = souplesse_fluage_iso( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, time[i] )
-
-
-		epstheorique[i] =  dot(s, stress)
-		print "Time: i", epstheorique[i]
-	return epstheorique
-		
-
-def souplesse_fluage_iso( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, time_scalar ):
-
-	s = initTensor( 0., 6, 6 )
-
-	J_tensor4 = generate_J_tensor4()
-	J_matrix4 = tensor4_to_voigt4( J_tensor4 )
 	
-	K_tensor4 = generate_K_tensor4()
-	K_matrix4 = tensor4_to_voigt4( K_tensor4 )
+	poisson = []
+	for i in range(0, len(eps11_th)):
+		print -1. * eps22_th[i]/eps11_th[i]
+		poisson.append( -1. * eps22_th[i]/eps11_th[i] )
 	
-	for i in range(0, len(s[0]) ):
-		for j in range(0, len(s[0]) ):
-			for k in range(0, len(fmin_slsqp_alpha) ):
-				if k == 0:
-					s[i][j] = fmin_slsqp_alpha[k]*J_matrix4[i][j] + fmin_slsqp_beta[k]*K_matrix4[i][j]
-				else:
-					s[i][j] = s[i][j] + ( (1 - exp( - lambdas[k]*time_scalar))*fmin_slsqp_alpha[k])*J_matrix4[i][j] + ( (1 - exp( - lambdas[k]*time_scalar))*fmin_slsqp_beta[k])*K_matrix4[i][j]
+	plt.plot( time, poisson, 'b--', label = "poisson")
+	plt.xlabel('time')
+	plt.title("Poisson ratio")
+	plt.ylabel('-eps22/eps11')
+	plt.legend()
+	plt.savefig('poisson_ratio.png')
+	plt.close()
 
-	return s
 
-
-def residuals( x, deformation_dagger, time, stress, lambdas ):
-	err = 0
-	for i in range( 0, len(time) ):
-		err = err + pow( ( deformation_dagger[i] - deformation_dagger_theory( stress, lambdas, time[i], x ) ), 2 )
-	return err
-	
-def deformation_dagger_theory( stress, lambdas, time, x ):
-	
-	#lambdas = []
-	#for i in range(0, 60, 5):
-		#lambdas.append( float( 1./pow(10, float(i)/10.) ) )
-
-	#stress = initTensor(0., 6)
-	#stress[0] = 20.
-	#print stress
-	
-	for i in range(0, len(lambdas)):
-		if x[i] < 0.:
-			x[i] = x[i]*x[i]
-	
-	for i in range(0, len(lambdas)):
-		if i == 0:
-			f = x[0]
-		else:
-			f = f + x[i] * (1. - exp( -lambdas[i]* time  ) )
-	f = f * stress[0]
-	
-	return f
 	
 	
 #exercice01()
