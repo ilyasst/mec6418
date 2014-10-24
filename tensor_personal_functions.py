@@ -527,4 +527,12 @@ def extract_cubic_parameters( S_matrix ):
 	
 	return alpha, beta, gamma
 	
-	
+def generate_symmetric_matrix66_from_list( C ):
+
+	C_matrix = [ [ C[0] , C[1] , C[2] , C[3] , C[4] , C[5] ],
+	[	C[1] , C[6] , C[7] , C[8] , C[9] , C[10]],
+	[	C[2] , C[7] , C[11], C[12], C[13], C[14]],
+	[	C[3] , C[8] , C[12], C[15], C[16], C[17]],
+	[	C[4] , C[9] , C[13], C[16], C[18], C[19]],
+	[	C[5] , C[10], C[14], C[17], C[19], C[20]] ]
+	return C_matrix

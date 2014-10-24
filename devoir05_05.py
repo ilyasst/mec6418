@@ -39,6 +39,7 @@ print ""
 print "apart( gamma_s ) =", sy.apart( gamma_s )
 
 print ""
+
 gamma_t = inverse_laplace_carson( gamma_s, t, s)
 print "gamma_t:", gamma_t
 
