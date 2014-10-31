@@ -320,11 +320,11 @@ def problem06():
 	print "trace_after_rand_base_change:", trace_after_rand_base_change
 	
 		
-#problem2()
-#problem4()
+problem2()
+problem4()
 
 #PROBLEM with 10^(-3) CHECK IT SOMEDAY !
-#problem10()
+problem10()
 
 problem13()
 

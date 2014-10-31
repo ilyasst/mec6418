@@ -65,3 +65,32 @@ def import_data_05_04( file_name ):
 					stress[i-1][j] = float(row[j+1])
 				i = i + 1		
 	return time, stress
+
+def import_data_lab_fluage( file_name ):
+	i = 0
+	time = []
+	
+	stress = []
+	
+	with open( file_name, 'rb') as csvfile:
+		spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+		total_lines = 0
+		for line in spamreader:
+			total_lines = total_lines + 1
+		strain = initTensor(0, total_lines, 6)
+		
+		print 
+		print "Importing data from", file_name
+		print "The file contains", total_lines, "lines."
+		csvfile.seek(0)
+		for row in spamreader:
+			if i == 0:
+				i = i + 1
+				pass
+			else:
+				time.append( float( row[0]) )
+				stress.append( float( row[1] ) )
+				for j in range(0, 2):
+					strain[i-1][j] = float( row[j+2] )
+				i = i + 1	
+	return time, stress, strain

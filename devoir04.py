@@ -271,5 +271,5 @@ def exercice02():
 
 	
 	
-#exercice01()
+exercice01()
 exercice02()
