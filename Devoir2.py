@@ -276,6 +276,25 @@ def problem13():
 	print omega_inverse[1][0], " * F"
 	print 1./delta, " * KT"
 	print 1./delta_prime, " * KL"
+	
+	EL_matrix = tensor4_to_voigt4( EL )
+	JT_matrix = tensor4_to_voigt4( JT )
+	KT_matrix = tensor4_to_voigt4( KT )
+	KL_matrix = tensor4_to_voigt4( KL )
+	
+	Sinv = initTensor( 0., 6, 6 )
+	Sinv = dot( omega_inverse[0][0], EL_matrix ) + dot( omega_inverse[1][1], JT_matrix )  + dot( omega_inverse[1][0] , F_matrix ) + dot( omega_inverse[0][1] , F_matrix_transposed ) + dot( 1./delta, KT_matrix ) + dot( 1./delta_prime, KL_matrix )  
+	
+	Sinv_tensor = voigt4_to_tensor4( Sinv )
+	
+	gamma_T_test = tensor4_contract4_tensor4( Sinv_tensor, F_tensor_transposed )
+	
+	print "Sin="
+	print Sinv
+	
+	print "Gamma T test:"
+	print gamma_T_test
+	
 
 def problem06():
 	
@@ -307,7 +326,7 @@ def problem06():
 #PROBLEM with 10^(-3) CHECK IT SOMEDAY !
 #problem10()
 
-#problem13()
+problem13()
 
 #CA MARCHE PAS
-problem06()
+#problem06()

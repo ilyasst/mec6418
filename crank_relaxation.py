@@ -3,6 +3,7 @@ from projectors_personal_functions import *
 from convenient_objects import *
 from numpy.linalg import inv
 import matplotlib.pyplot as plt
+from import_data import import_data_05_04
 
 #Deformation is a vector(n, 6)
 #h les pas de temps: 10, 100, 1000
@@ -26,9 +27,19 @@ def crankn_relaxation(time_length, n, deformation, k0, k1, k2, u0, u1, u2, w1, w
 
 	K_matrix = tensor4_to_voigt4( K_tensor4 )
 	
+
+	
 	#Matrices rigid
 	C0 = 3.*dot( k0, J_matrix) + 2.*dot( u0, K_matrix )
-	C1 = 3.*dot( k1, J_matrix) + 2.*dot( u1, K_matrix )
+	#C1 = 3.*dot( k1, J_matrix) + 2.*dot( u1, K_matrix )
+	#modification speciale pour l'intra 1
+	# Annulation de C1 car non isotrope et creation de matrice C1 isotrope transverse
+	El1 = 7.
+	Et1 = 2.
+	vl1 = 0.7
+	vt1 = 0.2
+	Gl1 = 2.
+	C1 = generate_symmetric_matrix66_from_list( [ 1./El1, -vl1/El1, -vl1/El1, 0., 0., 0., 1./Et1, -vt1/Et1, 0., 0., 0., 1./Et1, 0., 0., 0., (1.-vt1)/Et1, 0., 0., 1./(2.*Gl1), 0., 1./(2.*Gl1) ])
 	C2 = 3.*dot( k2, J_matrix) + 2.*dot( u2, K_matrix )
 	print "C[0]:"
 	for i in range(0, len(C0)):
@@ -103,7 +114,7 @@ def crankn_relaxation(time_length, n, deformation, k0, k1, k2, u0, u1, u2, w1, w
 	for i in range( 1, n ):
 		temp_def = []
 		for j in range(0, 6):
-			#temp_def.append( deformation[i][j] + deformation[i-1][j] ) 
+			temp_def.append( deformation[i][j] + deformation[i-1][j] ) 
 		#print "temp_def;"
 		#print temp_def, len(temp_def) 
 		
@@ -116,52 +127,72 @@ def crankn_relaxation(time_length, n, deformation, k0, k1, k2, u0, u1, u2, w1, w
 time_length = 100
 eps0 = 0.01
 
-n = 10
-h = float(time_length)/float(n)
-
-#Creation du vecteur de deformaion constant au cours du temps
-deformation = initTensor(0., n, 6)
-for i in range(0, n):
-	deformation[i][0] = eps0
-stress_10 = crankn_relaxation( time_length, n, deformation, 10., 10., 6., 4., 4., 1., 0.1, 0.0116 )
-stress11_10 = []
-time10 = []
-for i in range(0, len(stress_10)):
-	time10.append( float(i)*h )
-	stress11_10.append( stress_10[i][0] )
+#n = 10
 
 
-n = 100
+##Creation du vecteur de deformaion constant au cours du temps
+#deformation = initTensor(0., n, 6)
+#for i in range(0, n):
+	#deformation[i][0] = eps0
+#stress_10 = crankn_relaxation( time_length, n, deformation, 10., 10., 6., 4., 4., 1., 0.1, 0.0116 )
+#stress11_10 = []
+#time10 = []
+#for i in range(0, len(stress_10)):
+	#time10.append( float(i)*h )
+	#stress11_10.append( stress_10[i][0] )
+
+
+#n = 100
+#h = float(time_length)/float(n)
+##Creation du vecteur de deformaion constant au cours du temps
+#deformation = initTensor(0., n, 6)
+#for i in range(0, n):
+	#deformation[i][0] = eps0
+#stress_100 = crankn_relaxation( time_length, n, deformation, 10., 10., 6., 4., 4., 1., 0.1, 0.0116 )
+#stress11_100 = []
+#time100 = []
+#for i in range(0, len(stress_100)):
+	#time100.append( float(i)*h )
+	#stress11_100.append( stress_100[i][0] )
+
+#time is a list
+#stress is (n, 6) tensor !
+time, deformation = import_data_05_04( "question5-intra1.csv" )
+
+n = len(time)
+time_length = time[n-1]
 h = float(time_length)/float(n)
+
+k0 = 4.
+mu0 = 10.
+k2 = 6.
+mu2 = 1.
+lambda1 = 1./17.
+lambda2 = 1./97.
+k1 = 0
+mu1 = 0
+
+
+#n = 1000
+#h = float(time_length)/float(n)
 #Creation du vecteur de deformaion constant au cours du temps
-deformation = initTensor(0., n, 6)
-for i in range(0, n):
-	deformation[i][0] = eps0
-stress_100 = crankn_relaxation( time_length, n, deformation, 10., 10., 6., 4., 4., 1., 0.1, 0.0116 )
-stress11_100 = []
-time100 = []
-for i in range(0, len(stress_100)):
-	time100.append( float(i)*h )
-	stress11_100.append( stress_100[i][0] )
-	
-	
-n = 1000
-h = float(time_length)/float(n)
-#Creation du vecteur de deformaion constant au cours du temps
-deformation = initTensor(0., n, 6)
-for i in range(0, n):
-	deformation[i][0] = eps0
-stress_1000 = crankn_relaxation( time_length, n, deformation, 10., 10., 6., 4., 4., 1., 0.1, 0.0116 )
+#deformation = initTensor(0., n, 6)
+#for i in range(0, n):
+	#deformation[i][0] = eps0
+
+stress_1000 = crankn_relaxation( time_length, n, deformation, k0, k1, k2, mu0, mu1, mu2, lambda1, lambda2 )
+print "Temps", "Stress11", "Stress22", "Stress33", "Stress23", "Stress13", "Stress12"
+print time[n-1], stress_1000[n-1][0], stress_1000[n-1][1], stress_1000[n-1][2], stress_1000[n-1][3], stress_1000[n-1][4], stress_1000[n-1][5]
 stress11_1000 = []
 time1000 = []
 for i in range(0, len(stress_1000)):
 	time1000.append( float(i)*h )
 	stress11_1000.append( stress_1000[i][0] )
-	print "Stress", i, time1000[i], stress11_1000[i]
+	#print "Stress", i, time1000[i], stress11_1000[i]
 
-	
-plt.plot( time10, stress11_10, 'b--', label = "stress11_n=10")
-plt.plot( time100, stress11_100, 'r--', label = "stress11_n=100")
+
+#plt.plot( time10, stress11_10, 'b--', label = "stress11_n=10")
+#plt.plot( time100, stress11_100, 'r--', label = "stress11_n=100")
 plt.plot( time1000, stress11_1000, 'g--', label = "stress11_n=1000")
 plt.xlabel('time')
 plt.title("Stress")

@@ -120,12 +120,12 @@ def exercice02():
 	time = []
 	deformation11 = []
 	deformation22 = []
-	time, deformation11, deformation22 = import_data_04_02( "04_02_donnees.csv" )
+	time, deformation11, deformation22 = import_data_04_02( "question3-intra1.csv" )
 	time = asarray( time )
 	
 	print "Stress:"
 	stress = initTensor(0., 6)
-	stress[0] = 20.
+	stress[0] = 10.
 	print stress
 	
 	print "LAMBDAS:"
@@ -227,7 +227,7 @@ def exercice02():
 	plt.plot( time, deformation_double_dagger, 'rs', label = "Def_double_dagger_exp")
 	plt.plot( time, deformation_double_dagger_theory_list, 'r--', label = "Def_double_dagger_theo")
 	plt.xlabel('time')
-	plt.title("Stress: 20MPa")
+	plt.title("Stress: 10MPa")
 	plt.ylabel('deformations')
 	plt.legend()
 	plt.savefig('04_02_Def_dagger_th_VS_exp.png')
@@ -249,10 +249,10 @@ def exercice02():
 	plt.plot( time, eps22_th, 'r--', label = "Def22_th")
 	plt.plot( time, deformation22, 'rs', label = "Def22_exp")
 	plt.xlabel('time')
-	plt.title("Stress: 20MPa")
+	plt.title("Stress: 10MPa")
 	plt.ylabel('deformations')
 	plt.legend()
-	plt.savefig('04_02_Eps_th_VS_exp.png')
+	plt.savefig('Q3_intra_Exp-VS-Code.png')
 	plt.close()
 	
 	poisson = []
