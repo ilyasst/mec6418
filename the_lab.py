@@ -2,6 +2,25 @@ from import_data import *
 import matplotlib.pyplot as plt
 
 
+print "LAMBDAS:"
+lambdas = []
+for i in range(0, 45, 5):
+	lambdas.append( float( 1./pow(10, float(i)/10.) ) )
+print lambdas
+print "Len(lambas):", len(lambdas)
+
+car_times = []
+print
+print "TEMPS CARACTERISTIQUES:"
+car_times.append( 5.5 )
+print "t1 = 5.5 s"
+print "t2 = 905 s"
+car_times.append( 905. )
+print "t3 = 910.5 s"
+car_times.append( 910.5 )
+print 
+
+
 def determine_lineartiy_ratio( time2MPa, stress02, deformation02, stress0x, deformation0x ):
 	ratio11 = []
 	ratio22 = []
@@ -57,11 +76,14 @@ def determine_linearity():
 	deformation02_22 = []
 	deformation05_11 = []
 	deformation05_22 = []
-	for i in range(0, len(deformation2MPa)-1):
+	time2MPa = []
+	for i in range(0, 50):
+	#len(deformation2MPa)-1
 		deformation02_11.append( float(deformation2MPa[i][0]) ) 
 		deformation02_22.append( float(deformation2MPa[i][1]) )
 		deformation05_11.append( float(deformation5MPa[i][0]) ) 
 		deformation05_22.append( float(deformation5MPa[i][1]) )
+		time2MPa = time2MPa.append( time2MPa[i] )
 
 	print len(deformation02_11), len(time2MPa)
 	
@@ -70,10 +92,11 @@ def determine_linearity():
 	plt.plot(time2MPa, deformation02_22, 'g--', label = "Def2Mpa_22")
 	plt.plot(time5MPa, deformation05_11, 'r--', label = "Def5Mpa_11")
 	plt.plot(time5MPa, deformation05_22, 'y--', label = "Def5Mpa_22")
+	#plt.figure(figsize=(18, 12), dpi=400)
 	plt.xlabel('time')
 	plt.ylabel('stress')
 	plt.legend( )
-	plt.savefig('lab_stress_def_initial_data.png')
+	plt.savefig('lab_stress_def_initial_data.png', dpi = 300)
 	plt.close()
 	
 
@@ -94,6 +117,43 @@ def determine_linearity():
 	plt.close()
 
 
-def 
+def determine_alpha_beta():
 	
-determine_linearity()
+	time2MPa, stress2MPa, deformation2MPa = import_data_lab_fluage( "fluage-recouvrance-2MPa.csv" )
+	time5MPa, stress5MPa, deformation5MPa = import_data_lab_fluage( "fluage-recouvrance-5MPa.csv" )
+	time10MPa, stress10MPa, deformation10MPa = import_data_lab_fluage( "fluage-recouvrance-10MPa.csv" )
+	
+	print
+	print "Determining Deformation_Daggers for sets of data..."
+	print 
+	
+	deformation_dag1_2MPa, deformation_dag2_2MPa = determine_deformation_daggers(deformation2MPa)
+	deformation_dag1_5MPa, deformation_dag2_5MPa = determine_deformation_daggers(deformation5MPa)
+	deformation_dag1_10MPa, deformation_dag2_10MPa = determine_deformation_daggers(deformation10MPa)
+	
+	print "Creating Deformation Dag1 and Dag2 matrix for minimization..."
+	
+	deformation_dag1 = []
+	deformation_dag2 = []
+	deformation_dag1.append( deformation_dag1_2MPa ) 
+	deformation_dag2.append( deformation_dag2_2MPa ) 
+	deformation_dag1.append( deformation_dag1_5MPa ) 
+	deformation_dag2.append( deformation_dag2_5MPa ) 
+	deformation_dag1.append( deformation_dag1_10MPa ) 
+	deformation_dag2.append( deformation_dag2_10MPa ) 
+	#deformation_dag1 and deformation_dag2 contain 3 columns which each contains data for 2MPa, 5MPa, 10MPA as lists
+
+
+
+
+def determine_deformation_daggers(deformation):
+	deformation_dag1 = []
+	deformation_dag2 = []
+	for i in range(0, len( deformation )):
+		deformation_dag1.append( deformation[i][0] - deformation[i][1] )
+		deformation_dag2.append( deformation[i][0] + 2.*deformation[i][1] )
+	return deformation_dag1, deformation_dag2
+
+determine_alpha_beta()
+	
+#determine_linearity()
