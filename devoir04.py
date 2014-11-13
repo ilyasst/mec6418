@@ -1,11 +1,11 @@
 from numpy import *
+from scipy.optimize import fmin_slsqp
 from tensor_personal_functions import *
 from convenient_objects import *
 from projectors_personal_functions import *
 from import_data import *
 import matplotlib.pyplot as plt
 from convenient_objects import *
-from scipy.optimize import fmin_slsqp
 from scipy.optimize import leastsq
 
 

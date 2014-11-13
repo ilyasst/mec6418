@@ -1,5 +1,9 @@
 from import_data import *
 import matplotlib.pyplot as plt
+from the_lab_eqs import *
+from numpy import *
+from scipy.optimize import fmin_slsqp
+from tensor_personal_functions import *
 
 
 print "LAMBDAS:"
@@ -131,8 +135,15 @@ def determine_alpha_beta():
 	deformation_dag1_5MPa, deformation_dag2_5MPa = determine_deformation_daggers(deformation5MPa)
 	deformation_dag1_10MPa, deformation_dag2_10MPa = determine_deformation_daggers(deformation10MPa)
 	
-	print "Creating Deformation Dag1 and Dag2 matrix for minimization..."
+	print
+	print "Determining sigma_max_exp for each linear experiment..."
+	sigma_m = []
+	sigma_m.append( determine_sigma_max( stress2MPa ) )
+	sigma_m.append( determine_sigma_max( stress5MPa ) )
+	sigma_m.append( determine_sigma_max( stress10MPa ) )
 	
+	print
+	print "Creating Deformation Dag1 and Dag2 matrix for minimization..."	
 	deformation_dag1 = []
 	deformation_dag2 = []
 	deformation_dag1.append( deformation_dag1_2MPa ) 
@@ -142,9 +153,49 @@ def determine_alpha_beta():
 	deformation_dag1.append( deformation_dag1_10MPa ) 
 	deformation_dag2.append( deformation_dag2_10MPa ) 
 	#deformation_dag1 and deformation_dag2 contain 3 columns which each contains data for 2MPa, 5MPa, 10MPA as lists
+	
+	print "Initial values betas:"
+	betas = []
+	for i in range(0, len(lambdas) ):
+		betas.append( 1.e-3 )
+	print betas
+	betas = asarray(betas)
+	
+	print "Initial values alpha:"
+	alphas = []
+	for i in range(0, len(lambdas) ):
+		alphas.append( 1.e-5 )
+	print alphas
+	alphas = asarray(alphas)
+	
+	print
+	print "LEN( betas )", len(betas)
+	print "LEN( alphas )", len(alphas)
+	print "LEN( lambdas )", len(lambdas)
+	print "LEN( sigma_m )", len(sigma_m)
+	print "LEN( car_times )", len(car_times)
+	print
+	
+	fmin_slsqp_beta = fmin_slsqp( residuals, betas, args = ( deformation_dag1, time2MPa, lambdas, sigma_m, car_times ), bounds = [[0., inf]]*len(betas), iprint =2 )
+	print "fmin_slsqp_beta:"
+	for i in range(len(fmin_slsqp_beta)):
+		print "beta", i, fmin_slsqp_beta[i]
+	print "res(fmin_slsqp_beta):", len( fmin_slsqp_beta )
+	
+	fmin_slsqp_alpha = fmin_slsqp( residuals, alphas, args = ( deformation_dag2, time2MPa, lambdas, sigma_m, car_times ), bounds = [[0., inf]]*len(alphas), iprint =2 )
+	print "fmin_slsqp_alpha:"
+	for i in range(len(fmin_slsqp_alpha)):
+		print "alpha", i, fmin_slsqp_alpha[i]
+	print "res(fmin_slsqp_alpha):", len( fmin_slsqp_alpha )
 
 
-
+def determine_sigma_max( stress2MPa ):
+	temp_sum = 0.
+	for i in range(14, 58):
+		temp_sum = temp_sum + float( stress2MPa[i] )
+	sigma2MPa_max = temp_sum / (58.-14.)
+	print "SigmaMax:", sigma2MPa_max
+	return sigma2MPa_max
 
 def determine_deformation_daggers(deformation):
 	deformation_dag1 = []
