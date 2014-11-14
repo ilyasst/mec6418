@@ -90,30 +90,30 @@ def StoC_interconversion1D( S, Lambda ):
 	
 	#3
 	a = np.zeros(shape=(1, M))
-	for index in xrange( 0, M ) :
-		a[ 0, index ] = math.sqrt( Lambda[index]*S[index +1] )
-	print "(3) a = %s" % a
-	print "(3th) 	a = %s" % "[", math.sqrt(6)/17. ,",", 2./(17*math.sqrt(35) ) ,"]" 
+	for index in range( 1, M ) :
+		a[ 0, index ] = math.sqrt( Lambda[index-1]*S[index] )
+	#print "(3) a = %s" % a
+	#print "(3th) 	a = %s" % "[", math.sqrt(6)/17. ,",", 2./(17*math.sqrt(35) ) ,"]" 
 
 	#4 
 	A = np.zeros(shape=(M, M))
 	for j in xrange( 0, M ):
 		A[j, j] = Lambda[j]
-	print "(4) 	A = %s" % A
-	print "(4th) 	A = [[ ", 28./17. ,",", -2./17.*math.sqrt( 6./35. ) ," ], [", -2./17*math.sqrt( 6./35. ) ,",", 13./595. , "]]" 
+	#print "(4) 	A = %s" % A
+	#print "(4th) 	A = [[ ", 28./17. ,",", -2./17.*math.sqrt( 6./35. ) ," ], [", -2./17*math.sqrt( 6./35. ) ,",", 13./595. , "]]" 
 
 	#5
 	B = np.identity(M)
-	print "(4) 	B = %s" % B
+	#print "(4) 	B = %s" % B
 
 	# Compute the internal matrices associated with the relaxation modulus
 	#7
 	L1 = 1/A1
-	print "(7) 	L1 = %s" % L1
+	#print "(7) 	L1 = %s" % L1
 
 	#8
 	l = ( a.transpose()*L1 ).transpose()
-	print "(8) 	l = %s" % l
+	#print "(8) 	l = %s" % l
 
 	axa = np.zeros(shape=(M, M))
 	for k in xrange(0, M ):
@@ -121,37 +121,37 @@ def StoC_interconversion1D( S, Lambda ):
 			axa[ k, q ] = a[ 0, k ] * a[ 0, q ]
 	#9
 	L = A + L1*( axa )
-	print "(9) 	A = %s" % A 
+	#print "(9) 	A = %s" % A 
 
 	# Diagonalization : 
 	# Compute the eigenvectores P and eigenvalues D of A with singular value decomposition
 	D, P = np.linalg.eigh( L )
-	print "(11) 	P = %s and D = %s" % ( P, D )
+	#print "(11) 	P = %s and D = %s" % ( P, D )
 
 	#12
 	Lstar = np.dot( np.dot( P.transpose(), L ) , P )
-	print "(12) 	L* = %s" % Lstar
+	#print "(12) 	L* = %s" % Lstar
 	#13
 	lstar = ( np.dot( P.transpose(), l.transpose() ) ).transpose()
-	print "(13) 	l* = %s" % lstar
+	#print "(13) 	l* = %s" % lstar
 
     	C0 = L1
-	C = [ 0 ]
+	C = [ ]
 
 	rho = []
 	for m in xrange( 0, M ):
-		print "m=%s" % m
 		Cm = pow( lstar[ 0, m ], 2 ) / Lstar[ m, m ]
-		print "(17)(m=%s) Cm = %s " % ( m, Cm )
+		#print "(17)(m=%s) Cm = %s " % ( m, Cm )
 		C.append( Cm )
 		rhom = Lstar[ m, m ] / B[ m, m ]
-		print "(17)(m=%s) rhom = %s " % ( m, rhom )
+		#print "(17)(m=%s) rhom = %s " % ( m, rhom )
 		rho.append( rhom )
+		
 	#15
 	for Ci in C :
 		C0 = C0 - Ci
 	C[0] = C0
-	print "(15) 	C0 = %s" % C0
+	#print "(15) 	C0 = %s" % C0
 
 	return { "C" : C, "rho" : rho }
 
@@ -166,21 +166,21 @@ def StoC_interconversion1D( S, Lambda ):
 # 	1/35.
 # ]
 
-C = [ 
-	10.,
-	2.,
-	5. 
-]
+#C = [ 
+	#10.,
+	#2.,
+	#5. 
+#]
 
-rho = [
-	1.,
-	10.
-]
+#rho = [
+	#1.,
+	#10.
+#]
 
-retour = CtoS_interconversion1D( C, rho )
-S = retour[ "S" ]
-Lambda = retour[ "Lambda" ]
-print "S is : %s \nLambda is : %s" % ( S, Lambda )
+#retour = CtoS_interconversion1D( C, rho )
+#S = retour[ "S" ]
+#Lambda = retour[ "Lambda" ]
+#print "S is : %s \nLambda is : %s" % ( S, Lambda )
 
 # Sprime = [
 # 	0.0588,

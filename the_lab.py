@@ -4,7 +4,7 @@ from the_lab_eqs import *
 from numpy import *
 from scipy.optimize import fmin_slsqp
 from tensor_personal_functions import *
-
+from CtoS_1D import *
 
 print "LAMBDAS:"
 lambdas = []
@@ -131,9 +131,10 @@ def determine_alpha_beta():
 	print "Determining Deformation_Daggers for sets of data..."
 	print 
 	
-	deformation_dag1_2MPa, deformation_dag2_2MPa = determine_deformation_daggers(deformation2MPa)
+	deformation_dag1_2MPa, deformation_dag2_2MPa =  determine_deformation_daggers(deformation2MPa)
 	deformation_dag1_5MPa, deformation_dag2_5MPa = determine_deformation_daggers(deformation5MPa)
 	deformation_dag1_10MPa, deformation_dag2_10MPa = determine_deformation_daggers(deformation10MPa)
+	print "LEN(deformation_dag1_2MPa):", len(deformation_dag1_2MPa)
 	
 	print
 	print "Determining sigma_max_exp for each linear experiment..."
@@ -157,14 +158,14 @@ def determine_alpha_beta():
 	print "Initial values betas:"
 	betas = []
 	for i in range(0, len(lambdas) ):
-		betas.append( 1.e-3 )
+		betas.append( 1.e-5 )
 	print betas
 	betas = asarray(betas)
 	
 	print "Initial values alpha:"
 	alphas = []
 	for i in range(0, len(lambdas) ):
-		alphas.append( 1.e-5 )
+		alphas.append( 1.e-7 )
 	print alphas
 	alphas = asarray(alphas)
 	
@@ -176,17 +177,192 @@ def determine_alpha_beta():
 	print "LEN( car_times )", len(car_times)
 	print
 	
-	fmin_slsqp_beta = fmin_slsqp( residuals, betas, args = ( deformation_dag1, time2MPa, lambdas, sigma_m, car_times ), bounds = [[0., inf]]*len(betas), iprint =2 )
+	fmin_slsqp_beta = fmin_slsqp( residuals, betas, args = ( deformation_dag1, time2MPa, lambdas, sigma_m, car_times ), bounds = [[0., inf]]*len(betas), iprint =2, acc = 1.e-8, epsilon=1.e-15 )
 	print "fmin_slsqp_beta:"
 	for i in range(len(fmin_slsqp_beta)):
 		print "beta", i, fmin_slsqp_beta[i]
 	print "res(fmin_slsqp_beta):", len( fmin_slsqp_beta )
 	
-	fmin_slsqp_alpha = fmin_slsqp( residuals, alphas, args = ( deformation_dag2, time2MPa, lambdas, sigma_m, car_times ), bounds = [[0., inf]]*len(alphas), iprint =2 )
+	fmin_slsqp_alpha = fmin_slsqp( residuals, alphas, args = ( deformation_dag2, time2MPa, lambdas, sigma_m, car_times ), bounds = [[0., inf]]*len(alphas), iprint =2, acc = 1.e-8 )
 	print "fmin_slsqp_alpha:"
 	for i in range(len(fmin_slsqp_alpha)):
 		print "alpha", i, fmin_slsqp_alpha[i]
 	print "res(fmin_slsqp_alpha):", len( fmin_slsqp_alpha )
+	
+	print 
+	print "S to C interconversion 1D for alphas...."
+	retour = StoC_interconversion1D( fmin_slsqp_alpha, lambdas )
+	alpha_inv = retour[ "C" ]
+	alpha_rho = retour[ "rho" ]
+	print "alpha_inv is : %s \nalpha_rho is : %s" % ( alpha_inv, alpha_rho )
+	print
+
+	print 
+	print "S to C interconversion 1D for betas...."
+	retour = StoC_interconversion1D( fmin_slsqp_beta, lambdas )
+	beta_inv = retour[ "C" ]
+	beta_rho = retour[ "rho" ]
+	print "beta_inv is : %s \nbeta_rho is : %s" % ( beta_inv, beta_rho )
+	print
+	
+	print "Determining theory stress..."
+	stress_theory_2MPa = []
+	for i in range(0, len(time2MPa)):
+		stress_theory_2MPa.append( stress_theory( car_times, sigma_m[0], time2MPa[i] ) )
+	stress_theory_5MPa = []
+	for i in range(0, len(time5MPa)):
+		stress_theory_5MPa.append( stress_theory( car_times, sigma_m[1], time5MPa[i] ) )
+	stress_theory_10MPa = []
+	for i in range(0, len(time10MPa)):
+		stress_theory_10MPa.append( stress_theory( car_times, sigma_m[2], time10MPa[i] ) )
+	plt.plot(time2MPa, stress2MPa, 'r--', label = "Stress2MPa")
+	plt.plot(time2MPa, stress_theory_2MPa, 'b--', label = "Stress2MPa_th")
+	plt.plot(time5MPa, stress5MPa, 'g--', label = "Stress5MPa")
+	plt.plot(time5MPa, stress_theory_5MPa, 'm--', label = "Stress5MPa_th")
+	plt.plot(time10MPa, stress10MPa, 'y--', label = "Stress10MPa")
+	plt.plot(time10MPa, stress_theory_10MPa, 'k--', label = "Stress10MPa_th")
+	plt.xlabel('time')
+	plt.ylabel('stress')
+	plt.legend( )
+	plt.savefig('lab_verifying_theory_stress.png')
+	plt.close()
+	print "Plot showing theory+exp stress available *lab_verifying_theory_stress.png*..."
+	
+	print 
+	print "Determining deformatin_dagger and double-daggers..."
+	def2MPa_dag1_theory = []
+	def2MPa_dag2_theory = []
+	def5MPa_dag1_theory = []
+	def5MPa_dag2_theory = []
+	def10MPa_dag1_theory = []
+	def10MPa_dag2_theory = []
+	for i in range(0, len(time2MPa)):
+		def2MPa_dag1_theory.append( deformation_dagger_theory( fmin_slsqp_beta, lambdas, time2MPa[i], sigma_m[0], car_times ) )
+		def2MPa_dag2_theory.append( deformation_dagger_theory( fmin_slsqp_alpha, lambdas, time2MPa[i], sigma_m[0], car_times ) )
+		def5MPa_dag1_theory.append( deformation_dagger_theory( fmin_slsqp_beta, lambdas, time2MPa[i], sigma_m[1], car_times ) )
+		def5MPa_dag2_theory.append( deformation_dagger_theory( fmin_slsqp_alpha, lambdas, time2MPa[i], sigma_m[1], car_times ) )
+		def10MPa_dag1_theory.append( deformation_dagger_theory( fmin_slsqp_beta, lambdas, time2MPa[i], sigma_m[2], car_times ) )
+		def10MPa_dag2_theory.append( deformation_dagger_theory( fmin_slsqp_alpha, lambdas, time2MPa[i], sigma_m[2], car_times ) )
+
+	plt.plot(time2MPa, def2MPa_dag1_theory, 'ro', label = "Eps2MPa_dag1")
+	plt.plot(time2MPa, deformation_dag1_2MPa, 'b--', label = "Eps2MPa_dag1_th")
+	plt.plot(time2MPa, def2MPa_dag2_theory, 'go', label = "Eps2MPa_dag2")
+	plt.plot(time2MPa, deformation_dag2_2MPa, 'k--', label = "Eps2MPa_dag2_th")
+	plt.xlabel('time')
+	plt.ylabel('def')
+	plt.legend( )
+	plt.savefig('lab_verifying_theory_daggers_2MPa.png')
+	plt.close()
+	
+	plt.plot(time5MPa, def5MPa_dag1_theory, 'ro', label = "Eps5MPa_dag1")
+	plt.plot(time5MPa, deformation_dag1_5MPa, 'b--', label = "Eps5MPa_dag1_th")
+	plt.plot(time5MPa, def5MPa_dag2_theory, 'go', label = "Eps5MPa_dag2")
+	plt.plot(time5MPa, deformation_dag2_5MPa, 'k--', label = "Eps5MPa_dag2_th")
+	plt.xlabel('time')
+	plt.ylabel('def')
+	plt.legend( )
+	plt.savefig('lab_verifying_theory_daggers_5MPa.png')
+	plt.close()
+	
+	plt.plot(time10MPa, def10MPa_dag1_theory, 'ro', label = "Eps10MPa_dag1")
+	plt.plot(time10MPa, deformation_dag1_10MPa, 'b--', label = "Eps10MPa_dag1_th")
+	plt.plot(time10MPa, def10MPa_dag2_theory, 'go', label = "Eps10MPa_dag2")
+	plt.plot(time10MPa, deformation_dag2_10MPa, 'k--', label = "Eps10MPa_dag2_th")
+	plt.xlabel('time')
+	plt.ylabel('def')
+	plt.legend( )
+	plt.savefig('lab_verifying_theory_daggers_10MPa.png')
+	plt.close()
+
+	print 
+	print "Determining deformatins_theory..."
+	def_theorique02MPa = determine_epstheorique( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, sigma_m[0] , time2MPa, car_times)
+	def_theorique05MPa = determine_epstheorique( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, sigma_m[1] , time2MPa, car_times)
+	def_theorique10MPa = determine_epstheorique( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, sigma_m[2] , time2MPa, car_times)
+	
+	def_theorique02MPa_1 = []
+	def_theorique02MPa_2 = []
+	def_exp02MPa_1 = []
+	def_exp02MPa_2 = []
+	def_theorique05MPa_1 = []
+	def_theorique05MPa_2 = []
+	def_exp05MPa_1 = []
+	def_exp05MPa_2 = []
+	def_theorique10MPa_1 = []
+	def_theorique10MPa_2 = []
+	def_exp10MPa_1 = []
+	def_exp10MPa_2 = []
+	for i in range(0, len(def_theorique02MPa)):
+		def_theorique02MPa_1.append( def_theorique02MPa[i][0] )
+		def_theorique02MPa_2.append( def_theorique02MPa[i][1] )
+		def_theorique05MPa_1.append( def_theorique05MPa[i][0] )
+		def_theorique05MPa_2.append( def_theorique05MPa[i][1] )
+		def_theorique10MPa_1.append( def_theorique10MPa[i][0] )
+		def_theorique10MPa_2.append( def_theorique10MPa[i][1] )
+		def_exp02MPa_1.append( deformation2MPa[i][0] )
+		def_exp02MPa_2.append( deformation2MPa[i][1] )
+		def_exp05MPa_1.append( deformation5MPa[i][0] )
+		def_exp05MPa_2.append( deformation5MPa[i][1] )
+		def_exp10MPa_1.append( deformation10MPa[i][0] )
+		def_exp10MPa_2.append( deformation10MPa[i][1] )
+
+	print
+	plt.plot(time2MPa, def_theorique02MPa_1, 'r--', label = "def2MPa1_th")
+	plt.plot(time2MPa, def_exp02MPa_1, 'ro', label = "def2MPa1")
+	plt.plot(time2MPa, def_theorique02MPa_2, 'b--', label = "def2MPa1_th")
+	plt.plot(time2MPa, def_exp02MPa_2, 'bo', label = "def2MPa1")
+	plt.xlabel('time')
+	plt.ylabel('def')
+	plt.legend( )
+	plt.savefig('lab_verifying_deformation_theory_2MPa.png')
+	plt.close()
+	plt.plot(time5MPa, def_theorique05MPa_1, 'r--', label = "def5MPa1_th")
+	plt.plot(time5MPa, def_exp05MPa_1, 'ro', label = "def5MPa1")
+	plt.plot(time5MPa, def_theorique05MPa_2, 'b--', label = "def5MPa1_th")
+	plt.plot(time5MPa, def_exp05MPa_2, 'bo', label = "def5MPa1")
+	plt.xlabel('time')
+	plt.ylabel('def')
+	plt.legend( )
+	plt.savefig('lab_verifying_deformation_theory_5MPa.png')
+	plt.close()
+	plt.plot(time10MPa, def_theorique10MPa_1, 'r--', label = "def10MPa1_th")
+	plt.plot(time10MPa, def_exp10MPa_1, 'ro', label = "def10MPa1")
+	plt.plot(time10MPa, def_theorique10MPa_2, 'b--', label = "def10MPa1_th")
+	plt.plot(time10MPa, def_exp10MPa_2, 'bo', label = "def10MPa1")
+	plt.xlabel('time')
+	plt.ylabel('def')
+	plt.legend( )
+	plt.savefig('lab_verifying_deformation_theory_10MPa.png')
+	plt.close()
+	print "Plot showing theory+exp def available *lab_verifying_deformation_theory.png*..."
+
+
+	
+	#Division by 3 necessary because C(t) = 3*k(t)*J + 2*u(t)*K
+	print "====================================================================="
+	print "Determining parameters for FEM:"
+	
+	print
+	tau_fem = []
+	for i in range( 0, len(alpha_rho)):
+		tau_fem.append( 1./alpha_rho[i] )
+	print "tau for FEM:", tau_fem
+	
+	print
+	u0_fem = sum( beta_inv )/ 2.
+	print "u0_fem =", u0_fem
+	
+	print
+	k0_fem = sum( alpha_inv )/ 3.
+	print "k0_fem =", k0_fem
+	
+	print
+	alpha_fem = []
+	for i in range(0, len(alpha_inv)):
+		alpha_fem.append( ( alpha_inv[i]/3. )/ k0_fem )
+	print "alpha for FEM:", alpha_fem
+
+
 
 
 def determine_sigma_max( stress2MPa ):
@@ -205,6 +381,19 @@ def determine_deformation_daggers(deformation):
 		deformation_dag2.append( deformation[i][0] + 2.*deformation[i][1] )
 	return deformation_dag1, deformation_dag2
 
+
+def stress_theory( car_times, sigma_m, time ):
+	
+	eq0 = ( sigma_m/car_times[0] ) * time * heaviside(time)
+	eq1 = ( sigma_m/car_times[0] ) * ( time - car_times[0] ) * heaviside(time-car_times[0])
+	eq2 = (sigma_m/(car_times[2] - car_times[1])) * (time-car_times[1]) * heaviside( time - car_times[1] )
+	eq3 = (sigma_m/(car_times[2] - car_times[1])) * (time-car_times[2]) * heaviside( time - car_times[2] )
+
+	stress_at_t = eq0 - eq1 - eq2 + eq3
+	return stress_at_t
+	
+	
+	
 determine_alpha_beta()
 	
 #determine_linearity()

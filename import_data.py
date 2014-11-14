@@ -76,8 +76,8 @@ def import_data_lab_fluage( file_name ):
 		spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
 		total_lines = 0
 		for line in spamreader:
-			total_lines = total_lines + 1
-		strain = initTensor(0, total_lines, 6)
+			total_lines = total_lines + 1 
+		strain = initTensor(0, total_lines-1, 6)
 		
 		print 
 		print "Importing data from", file_name
@@ -93,4 +93,5 @@ def import_data_lab_fluage( file_name ):
 				for j in range(0, 2):
 					strain[i-1][j] = float( row[j+2] )
 				i = i + 1	
+
 	return time, stress, strain
