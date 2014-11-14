@@ -1,0 +1,97 @@
+FINISH
+/CLEAR
+/COM,  Structural
+
+/FILNAME,geom_simple,1
+
+!!!!!!!!!!!!!!!!! Ce programme sert a tester les parametres entres sur une eprouvette de geometrie simple.
+
+FINISH
+/Prep7
+ET,1,shell281
+MPTEMP,1,0
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! Proprietes du materiau 																						 !
+! Partie elastique																								 !
+!																												 !
+MPDATA,EX,1,,3618.83 !!!! Entrer la valeur de E0_ansys														     !
+MPDATA,PRXY,1,,0.30333 !!!! Entrer la valeur de nu0_ansys													         !
+!																												 !
+!																												 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!															 !
+! Module de relaxation en cisaillement	: alpha_mu_ansys	    												 !
+!																												 !
+TB,PRONY,1,1,2,SHEAR    !!!! Ne pas oublier d'entrer le nombre de paires					       	 !
+TBTEMP,0																										 !
+TBDATA,,0.963, 6480.5, 0.037, 30.85                                                                 !                                                                                                       !
+!																												 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!															 !
+! Module de relaxation en compressibilite : alpha_k_ansys														 !
+!																												 !
+TB,PRONY,1,1,7,BULK     !!!! Ne pas oublier d'entrer le nombre de paires				             !
+TBTEMP,0																										 !
+TBDATA,,0.513, 8847.0, 0.0314, 3005.3, 0.0147, 976.4,  										                             !
+TBDATA,,0.0363, 298.19, 0.0748, 89.76, 0.0484, 29.728 	     !
+TBDATA,,0.280, 2.336
+!
+!																									
+!																												 !
+!fin des donnees pour les proprietes																			 !
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!fin des donnees pour les proprietes
+
+
+SECTYPE,1,shell
+secdata, 4.49,1,0,5
+BLC4, -(12.6)/2, -60/2, 12.6, 60,
+
+smrtsize,1
+AATT,1,,1,,1
+amesh,all
+
+nsel,S,loc,y,-60/2
+D,all,ALL,0
+nsel,all
+nsel,S,loc,y,60/2
+CM,charge,NODE
+*get,nnode,node,,count,max
+nsel,all
+
+FINISH
+/SOLU
+!*
+ANTYPE,4
+!*
+TRNOPT,FULL
+LUMPM,0
+NSUBST,20,30,
+OUTRES,ERASE
+OUTRES,ALL,1
+KBC,0 !0 rampe 1 step
+TIME,100 !temps fin du LS
+F, charge, FY, 350/nnode,
+lswrite,1
+
+NSUBST,20,700,
+OUTRES,ERASE
+OUTRES,ALL,1
+KBC,1
+F, charge, FY, 350/nnode,
+TIME,1999 !temps fin du LS
+lswrite,2
+
+lssolve,1,2,1
+
+FINISH
+/Post26
+
+ANSOL,2,2127,EPEL,X,strainx
+ANSOL,3,2127,EPEL,Y,strainy
+ANSOL,4,2127,EPEL,XY,strainxy
+
+PRVAR, 2, 3, 4
+
+
+
+

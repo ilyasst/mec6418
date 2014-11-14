@@ -177,13 +177,13 @@ def determine_alpha_beta():
 	print "LEN( car_times )", len(car_times)
 	print
 	
-	fmin_slsqp_beta = fmin_slsqp( residuals, betas, args = ( deformation_dag1, time2MPa, lambdas, sigma_m, car_times ), bounds = [[0., inf]]*len(betas), iprint =2, acc = 1.e-8, epsilon=1.e-15 )
+	fmin_slsqp_beta = fmin_slsqp( residuals, betas, args = ( deformation_dag1, time2MPa, lambdas, sigma_m, car_times ), bounds = [[0., inf]]*len(betas), iprint =2, acc = 1.e-15, epsilon=1.e-15 )
 	print "fmin_slsqp_beta:"
 	for i in range(len(fmin_slsqp_beta)):
 		print "beta", i, fmin_slsqp_beta[i]
 	print "res(fmin_slsqp_beta):", len( fmin_slsqp_beta )
 	
-	fmin_slsqp_alpha = fmin_slsqp( residuals, alphas, args = ( deformation_dag2, time2MPa, lambdas, sigma_m, car_times ), bounds = [[0., inf]]*len(alphas), iprint =2, acc = 1.e-8 )
+	fmin_slsqp_alpha = fmin_slsqp( residuals, alphas, args = ( deformation_dag2, time2MPa, lambdas, sigma_m, car_times ), bounds = [[0., inf]]*len(alphas), iprint =2, acc = 1.e-15 )
 	print "fmin_slsqp_alpha:"
 	for i in range(len(fmin_slsqp_alpha)):
 		print "alpha", i, fmin_slsqp_alpha[i]
@@ -337,17 +337,10 @@ def determine_alpha_beta():
 	print "Plot showing theory+exp def available *lab_verifying_deformation_theory.png*..."
 
 
-	
 	#Division by 3 necessary because C(t) = 3*k(t)*J + 2*u(t)*K
 	print "====================================================================="
 	print "Determining parameters for FEM:"
-	
-	print
-	tau_fem = []
-	for i in range( 0, len(alpha_rho)):
-		tau_fem.append( 1./alpha_rho[i] )
-	print "tau for FEM:", tau_fem
-	
+
 	print
 	u0_fem = sum( beta_inv )/ 2.
 	print "u0_fem =", u0_fem
@@ -357,10 +350,30 @@ def determine_alpha_beta():
 	print "k0_fem =", k0_fem
 	
 	print
-	alpha_fem = []
+	print "Alpha_mu", "tau_mu"
+	tau_comp_fem = []
+	for i in range( 0, len(alpha_rho)):
+		tau_comp_fem.append( 1./alpha_rho[i] )
+	alpha_comp_fem = []
 	for i in range(0, len(alpha_inv)):
-		alpha_fem.append( ( alpha_inv[i]/3. )/ k0_fem )
-	print "alpha for FEM:", alpha_fem
+		alpha_comp_fem.append( ( alpha_inv[i]/3. )/ k0_fem )
+		print alpha_comp_fem[i], tau_comp_fem[i]
+	
+	print
+	E0_fem = (9.*k0_fem*u0_fem)/(3*k0_fem + u0_fem )
+	print "E0 for FEM:", E0_fem
+	nu0_fem = (3.*k0_fem - 2.*u0_fem)/(6.*k0_fem + 2.*u0_fem)
+	print "nu0 for FEM:", nu0_fem
+
+	print
+	print "Alpha_k", "Tau_k"
+	alpha_cis_ansys = []
+	for i in range(0, len(beta_inv)):
+		alpha_cis_ansys.append( (beta_inv[i]/2.)/u0_fem )
+	tau_cis_fem = []
+	for i in range( 0, len(beta_rho)):
+		tau_cis_fem.append( 1./beta_rho[i] )
+		print alpha_cis_ansys[i], tau_cis_fem[i]
 
 
 
