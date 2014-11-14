@@ -2,11 +2,10 @@ from tensor_personal_functions import *
 from projectors_personal_functions import *
 from convenient_objects import *
 from numpy.linalg import inv
-from import_data import import_data_05_04
 import matplotlib.pyplot as plt
 
 
-def crankn_fluage(time_length, n, stress, k_0, k_1, k_2, u_0, u_1, u_2, lambda1, lambda2):
+def crankn_fluage(time_length, n, stress, alphas, betas, lambdas):
 	#wi et lambdaio are positive
 	print "================================================================================"
 	print "================================================================================"
