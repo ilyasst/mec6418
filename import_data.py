@@ -95,3 +95,56 @@ def import_data_lab_fluage( file_name ):
 				i = i + 1	
 
 	return time, stress, strain
+
+def import_data_verif_eprouvette_simple( file_name ):
+	i = 0
+	time = []
+	
+	with open( file_name, 'rb') as csvfile:
+		spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+		total_lines = 0
+		for line in spamreader:
+			total_lines = total_lines + 1 
+		stress = initTensor(0, total_lines-1, 6)
+		
+		print 
+		print "Importing data from", file_name
+		print "The file contains", total_lines, "lines."
+		csvfile.seek(0)
+		for row in spamreader:
+			if i == 0:
+				i = i + 1
+				pass
+			else:
+				time.append( float( row[0]) )
+				stress[i-1][1] = float( row[1] )
+				i = i + 1
+	return time, stress
+
+def import_data_verif_eprouvette_simple_ansys( file_name ):
+	i = 0
+	time = []
+	
+	with open( file_name, 'rb') as csvfile:
+		spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+		total_lines = 0
+		for line in spamreader:
+			total_lines = total_lines + 1 
+		strain = initTensor(0, total_lines-1, 6)
+		
+		print 
+		print "Importing data from", file_name
+		print "The file contains", total_lines, "lines."
+		csvfile.seek(0)
+		for row in spamreader:
+			if i == 0:
+				i = i + 1
+				pass
+			else:
+				time.append( float( row[0]) )
+				strain[i-1][1] = float( row[2] )
+				strain[i-1][0] = float( row[1] )
+				strain[i-1][3] = float( row[3] )
+				i = i + 1
+	return time, strain
+

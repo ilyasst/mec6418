@@ -126,4 +126,33 @@ def souplesse_fluage_def( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, time, car_
 	y = eq1 - eq2 - eq3 + eq4
 
 	return y
+
+def determine_epstheorique_verif( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, stress, time):
+	epstheorique = initTensor( 0., len(time), 6 )
+	for i in range(0, len(time) ):
+		s = initTensor(0., 6, 6 )
+		s = souplesse_fluage_iso_verif( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, time[i] )
+		epstheorique[i] =  dot(s, stress[i])
+	return epstheorique
+		
+
+def souplesse_fluage_iso_verif( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, time_scalar ):
+
+	s = initTensor( 0., 6, 6 )
+
+	J_tensor4 = generate_J_tensor4()
+	J_matrix4 = tensor4_to_voigt4( J_tensor4 )
+	
+	K_tensor4 = generate_K_tensor4()
+	K_matrix4 = tensor4_to_voigt4( K_tensor4 )
+	
+	for i in range(0, len(s[0]) ):
+		for j in range(0, len(s[0]) ):
+			for k in range(0, len(fmin_slsqp_alpha) ):
+				if k == 0:
+					s[i][j] = fmin_slsqp_alpha[k]*J_matrix4[i][j] + fmin_slsqp_beta[k]*K_matrix4[i][j]
+				else:
+					s[i][j] = s[i][j] + ( (1 - exp( - lambdas[k]*time_scalar))*fmin_slsqp_alpha[k])*J_matrix4[i][j] + ( (1 - exp( - lambdas[k]*time_scalar))*fmin_slsqp_beta[k])*K_matrix4[i][j]
+
+	return s
 	

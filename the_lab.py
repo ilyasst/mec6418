@@ -275,7 +275,7 @@ def determine_alpha_beta():
 	plt.close()
 
 	print 
-	print "Determining deformatins_theory..."
+	print "Determining deformations_theory..."
 	def_theorique02MPa = determine_epstheorique( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, sigma_m[0] , time2MPa, car_times)
 	def_theorique05MPa = determine_epstheorique( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, sigma_m[1] , time2MPa, car_times)
 	def_theorique10MPa = determine_epstheorique( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, sigma_m[2] , time2MPa, car_times)
@@ -374,9 +374,25 @@ def determine_alpha_beta():
 	for i in range( 0, len(beta_rho)):
 		tau_cis_fem.append( 1./beta_rho[i] )
 		print alpha_cis_ansys[i], tau_cis_fem[i]
-
-
-
+		
+		
+	print "====================================================================="
+	print "Verifying ANSYS results:"
+	time_eprouvette_simple_verif, stress_eprouvette_simple_verif = import_data_verif_eprouvette_simple( "lab_eprouvette_simple_verif.csv" )
+	time_eprouvette_simple_ansys, def_eprouvette_simple_ansys = import_data_verif_eprouvette_simple_ansys( "geom_simple_results.csv" )
+	def_theo_eprouvette_simple_verif = determine_epstheorique_verif( fmin_slsqp_alpha, fmin_slsqp_beta, lambdas, stress_eprouvette_simple_verif, time_eprouvette_simple_verif)
+	defY_eprouvette_simple = []
+	defY_eprouvette_simple_ansys = []
+	for i in range(0, len( time_eprouvette_simple_verif )):
+		defY_eprouvette_simple.append( def_theo_eprouvette_simple_verif[i][1] )
+		defY_eprouvette_simple_ansys.append( def_eprouvette_simple_ansys[i][1] )
+	plt.plot(time_eprouvette_simple_verif, defY_eprouvette_simple, 'r^', label = "defVerif_ep_simple")
+	plt.plot(time_eprouvette_simple_verif, defY_eprouvette_simple_ansys, 'r--', label = "defVerif_ep_ansys")
+	plt.xlabel('time')
+	plt.ylabel('def')
+	plt.legend( )
+	plt.savefig('strain_Y_eprouvette_simple.png')
+	plt.close()
 
 def determine_sigma_max( stress2MPa ):
 	temp_sum = 0.
@@ -404,7 +420,8 @@ def stress_theory( car_times, sigma_m, time ):
 
 	stress_at_t = eq0 - eq1 - eq2 + eq3
 	return stress_at_t
-	
+
+
 	
 	
 determine_alpha_beta()
