@@ -148,3 +148,24 @@ def import_data_verif_eprouvette_simple_ansys( file_name ):
 				i = i + 1
 	return time, strain
 
+
+def import_hmgnzt_quad( file_name ):
+	i = 0
+	
+	with open( os.getcwd() + "/hmgnzt_data/" + file_name, 'rb' ) as csvfile:
+		spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+		total_lines = 0
+		for line in spamreader:
+			total_lines = total_lines + 1 
+		
+		quad = initTensor(0., total_lines, 2)
+		print
+		print "Importing data from", file_name
+		print "The file contains", total_lines, "lines."
+		csvfile.seek(0)
+		i = 0
+		for row in spamreader:
+			quad[i][0] = float(row[0])
+			quad[i][1] = float(row[1])
+			i = i + 1
+	return quad
