@@ -5,18 +5,18 @@ from tensor_personal_functions import *
 
 #Tenseur alternateur
 def generate_epsilon_ijk():
-	epsilon_ijk = initTensor( 0, 3, 3, 3)
+	epsilon_ijk = initTensor( 0., 3, 3, 3)
 	
 	for i in range(0, len(epsilon_ijk) ):
 		for j in range(0, len(epsilon_ijk[0]) ):
 			for k in range(0, len(epsilon_ijk[0][0]) ):
 				
 				if (i == j) or (j == k) or (i == k):
-					epsilon_ijk[i][j][k] = 0
+					epsilon_ijk[i][j][k] = 0.
 				if (`i`+`j`+`k` == "012") or (`i`+`j`+`k` == "120") or (`i`+`j`+`k` == "201"):
-					epsilon_ijk[i][j][k] = 1
+					epsilon_ijk[i][j][k] = 1.
 				if (`i`+`j`+`k` == "021") or (`i`+`j`+`k` == "102") or (`i`+`j`+`k` == "210"):
-					epsilon_ijk[i][j][k] = -1
+					epsilon_ijk[i][j][k] = -1.
 			
 	return epsilon_ijk
 
