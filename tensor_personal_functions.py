@@ -1,4 +1,5 @@
 from numpy import *
+from projectors_personal_functions import *
 
 #=============================================================
 # Symmetries

@@ -2,6 +2,18 @@ from numpy import *
 from tensor_personal_functions import *
 from convenient_objects import *
 
+#Generate a tensor, any order, any size
+#Value is the default value, commonly 0
+def initTensor(value, *lengths):
+	list = []
+	dim = len(lengths)
+	if dim == 1:
+		for i in range(lengths[0]):
+			list.append(value)
+	elif dim > 1:
+		for i in range(lengths[0]):
+			list.append(initTensor(value, *lengths[1:]))
+	return list
 
 def generate_I_tensor4():
 	I_tensor4 = initTensor(0., 3, 3, 3, 3)
@@ -10,7 +22,6 @@ def generate_I_tensor4():
 			for k in range( len( I_tensor4[0][0][0] ) ):
 				for l in range( len( I_tensor4[0][0][0] ) ):
 					I_tensor4[i][j][k][l]=(1./2.)*( kronecker(i,k)*kronecker(j,l)+kronecker(i,l)*kronecker(j,k) )
-					
 	return I_tensor4
 	
 def generate_J_tensor4():
@@ -30,7 +41,7 @@ def generate_K_tensor4():
 		for j in range( len( K_tensor4[0][0][0] ) ):
 			for k in range( len( K_tensor4[0][0][0] ) ):
 				for l in range( len( K_tensor4[0][0][0] ) ):
-					K_tensor4[i][j][k][l]= (I_tensor4[i][j][k][l]-J_tensor4[i][j][k][l])
+					K_tensor4[i][j][k][l]= ( I_tensor4[i][j][k][l]-J_tensor4[i][j][k][l] )		
 	return K_tensor4
 
 #Isotropic transverse

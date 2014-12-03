@@ -1,9 +1,44 @@
 from projectors_personal_functions import *
 from import_data import *
 from convenient_objects import *
+from numpy.linalg import inv
+from tensor_personal_functions import *
 
+def voigt_hmgnzt_2phases(v0, k0, k1, mu0, mu1 ):
+	J_tensor4 = generate_J_tensor4()
+	K_tensor4 = generate_K_tensor4()
+	Cvoigt_tensor4 = dot( 3.*(k1 + v0*(k0 - k1)), J_tensor4 ) + dot( 2.*(mu1 + v0*(mu0 - mu1)), K_tensor4 )
+	return Cvoigt_tensor4
 
+def reuss_hmgnzt_2phases(v0, k0, k1, mu0, mu1 ):
+	J_tensor4 = generate_J_tensor4()
+	K_tensor4 = generate_K_tensor4()
+	Creuss_tensor4 = dot( 3.*k0*k1/(k0 + v0*(k1 - k0)), J_tensor4 ) + dot( 2.*mu0*mu1/(mu0 + v0*(mu1 - mu0)), K_tensor4 )
+	return Creuss_tensor4
 
+def mori_tanaka( a, C0_tensor4, C1_tensor4, zeta_csv, omega_csv ):
+	
+	S_eshelby_quad_tensor4 = generate_eshelby_tensor( a, C0_tensor4, zeta_csv, omega_csv )
+	S_eshelby_quad_tensor4 = clean_S_eshelby(S_eshelby_quad_tensor4)
+	S_eshelby_quad_matrix = tensor4_to_voigt4( S_eshelby_quad_tensor4 )
+
+	C0_matrix = tensor4_to_voigt4( C0_tensor4 )
+	C1_matrix = tensor4_to_voigt4( C1_tensor4 )
+
+	Im = tensor4_to_voigt4( generate_I_tensor4() )
+	C_difference = initTensor( 0., 6, 6 )
+	for i in range(0, len(C0_matrix)):
+		for j in range(0, len(C0_matrix)):
+			C_difference[i][j] = C1_matrix[i][j] - C0_matrix[i][j]
+	T0_matrix = Im
+	T1_matrix = inv( Im + dot( S_eshelby_quad_matrix, dot( inv(C0_matrix), (C_difference) ) ) )
+	
+	A0_matrix = inv( dot(C0_matrix,T0_matrix) + dot(C1_matrix,T1_matrix) )
+	A1_matrix = dot( T1_matrix, A0_matrix )
+	
+	C_MT_matrix = C0_matrix + dot( C1_matrix ,dot( C_difference, A1_matrix ) )
+	
+	return C_MT_matrix
 
 def generate_eshelby_tensor( a, C_tensor4, zeta_csv, omega_csv ):
 	zetas = determining_zetas( zeta_csv, omega_csv )
