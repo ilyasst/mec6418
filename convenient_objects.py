@@ -3,6 +3,19 @@ from tensor_personal_functions import *
 
 #http://sebastianraschka.com/Articles/2014_matlab_vs_numpy.html
 
+#Generate a tensor, any order, any size
+#Value is the default value, commonly 0
+def initTensor(value, *lengths):
+	list = []
+	dim = len(lengths)
+	if dim == 1:
+		for i in range(lengths[0]):
+			list.append(value)
+	elif dim > 1:
+		for i in range(lengths[0]):
+			list.append(initTensor(value, *lengths[1:]))
+	return list
+
 #Tenseur alternateur
 def generate_epsilon_ijk():
 	epsilon_ijk = initTensor( 0., 3, 3, 3)

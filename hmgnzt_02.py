@@ -54,8 +54,7 @@ for i in range(0, len(C1_matrix)):
 print
 print "---------------------------------------------------------------------------"
 	
-Cvoigt_tensor4 = voigt_hmgnzt_2phases(v0, k0, k1, mu0, mu1 )
-Cvoigt_matrix = tensor4_to_voigt4( Cvoigt_tensor4 )
+Cvoigt_matrix = voigt_hmgnzt_2phases(v0, k0, k1, mu0, mu1 )
 print
 print "Cvoigt_matrix:"
 for i in range(0, len(C0_matrix)):
@@ -69,8 +68,7 @@ for i in range(0, len(Svoigt_matrix)):
 print
 print "---------------------------------------------------------------------------"
 
-Creuss_tensor4 = reuss_hmgnzt_2phases(v0, k0, k1, mu0, mu1 )
-Creuss_matrix = tensor4_to_voigt4( Creuss_tensor4 )
+Creuss_matrix = reuss_hmgnzt_2phases(v0, k0, k1, mu0, mu1 )
 print
 print "Creuss_matrix:"
 for i in range(0, len(C0_matrix)):
@@ -84,7 +82,7 @@ for i in range(0, len(Sreuss_matrix)):
 print
 print "---------------------------------------------------------------------------"
 	
-C_MT_matrix = mori_tanaka( a, C0_tensor4, C1_tensor4, zeta_csv, omega_csv )
+C_MT_matrix = mori_tanaka( a, v0, C0_tensor4, C1_tensor4, zeta_csv, omega_csv )
 C_MT_tensor4 = voigt4_to_tensor4( C_MT_matrix )
 print
 print "C_MT_matrix:"
