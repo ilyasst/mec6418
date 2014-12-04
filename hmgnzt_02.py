@@ -33,7 +33,7 @@ a = [ 1., 1., 1E4 ]
 print a
 
 k0 = E0/(3.*(1. - 2.*nu0))
-mu0 = E0/(2.*(.1 + nu0))
+mu0 = E0/(2.*(1. + nu0))
 C0_tensor4 = dot( 3.*k0, J_tensor4 ) + dot( 2.*mu0, K_tensor4 )
 C0_matrix = tensor4_to_voigt4( C0_tensor4 )
 print
