@@ -20,6 +20,7 @@ def moyenne_orientation( Cm, angle0pi, angle02pi, N ):
 	for theta in range( 0, mx ):
 		for phi in range( 0, mx ):
 			for beta in range( 0, mx ):
+				
 				Pm[0][0] = cos(angle0pi[N][theta][0])*cos(angle02pi[N][phi][0])*cos(angle02pi[N][beta][0])-sin(angle02pi[N][phi][0])*sin(angle02pi[N][beta][0])
 				Pm[0][1] = -cos(angle0pi[N][theta][0])*cos(angle02pi[N][phi][0])*sin(angle02pi[N][beta][0])-sin(angle02pi[N][phi][0])*sin(angle02pi[N][beta][0])
 				Pm[0][2] = sin(angle0pi[N][theta][0])*cos(angle02pi[N][phi][0])
@@ -32,12 +33,17 @@ def moyenne_orientation( Cm, angle0pi, angle02pi, N ):
 				Pm[2][1] = sin(angle0pi[N][theta][0])*sin(angle02pi[N][beta][0])
 				Pm[2][2] = cos(angle0pi[N][theta][0])
 				
+				#for m in range(0, 3):
+					#for o in range(0, 3):
+						#if Pm[m][o] < 0.00001:
+							#Pm[m][o] = 0.
+				
 	
 				for i in range(0, 3):
 					for j in range(0, 3):
 						for k in range(0, 3):
 							for l in range(0, 3):
-								C_matrix_moy[0][0] = C_matrix_moy[0][0] + ( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][0]*Pm[k][0]*Pm[l][0]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
+								C_matrix_moy[0][0] = C_matrix_moy[0][0] + ( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][0]*Pm[k][0]*Pm[l][0]*C[i][j][k][l]* sin(angle0pi[N][theta][0]) * angle0pi[N][theta][1] * angle02pi[N][phi][1] * angle02pi[N][beta][1])
 								C_matrix_moy[1][1] = C_matrix_moy[1][1] + ( (1./(8.*pow( pi,2)))*Pm[i][1]*Pm[j][1]*Pm[k][1]*Pm[l][1]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
 								C_matrix_moy[2][2] = C_matrix_moy[2][2] + ( (1./(8.*pow( pi,2)))*Pm[i][2]*Pm[j][2]*Pm[k][2]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
 								C_matrix_moy[3][3] = C_matrix_moy[3][3] + 2.*( (1./(8.*pow( pi,2)))*Pm[i][1]*Pm[j][2]*Pm[k][1]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
@@ -53,6 +59,7 @@ def moyenne_orientation( Cm, angle0pi, angle02pi, N ):
 	return C_matrix_moy
 print
 print "Importing angles data..."
+
 
 zeta_csv = import_hmgnzt_quad( "zeta3_4points.csv" )
 omega_csv = import_hmgnzt_quad( "omega_512points.csv" )
