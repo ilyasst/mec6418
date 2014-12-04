@@ -4,6 +4,32 @@ from convenient_objects import *
 from hmgnzt_personal_functions import *
 from numpy.linalg import inv
 
+def temp_07_02():
+	zeta_csv = import_hmgnzt_quad( "zeta3_8points.csv" )
+	omega_csv = import_hmgnzt_quad( "omega_128points.csv" )
+	
+	El = 92.
+	Et = 5.
+	vl = 0.3 
+	vt = 0.41 
+	Gl = 2.
+	
+	S_matrix = [
+		[1./Et, -vl/El, -vt/Et, 0, 0, 0],
+		[-vl/El, 1./El, -vl/El, 0, 0, 0],
+		[-vt/Et, -vl/El, 1./Et, 0, 0, 0],
+		[0, 0, 0, 1./(2.*Gl), 0, 0],
+		[0, 0, 0, 0, (1.+vt)/Et, 0],
+		[0, 0, 0, 0, 0, 1./(2.*Gl)]
+		]
+	C_matrix = inv( S_matrix )
+	C_tensor4 = voigt4_to_tensor4( C_matrix )
+	
+	a = [ 1., 1., 10.]
+	S_eshelby_tensor4 = generate_eshelby_tensor( a, C_tensor4, zeta_csv, omega_csv )
+	S_eshelby_matrix = tensor4_to_voigt4( S_eshelby_tensor4 )
+	
+	return S_eshelby_matrix
 
 zeta_csv = import_hmgnzt_quad( "zeta3_4points.csv" )
 omega_csv = import_hmgnzt_quad( "omega_512points.csv" )
