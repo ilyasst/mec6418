@@ -86,14 +86,14 @@ def clean_S_eshelby(S_eshelby):
 		for j in range(0, 3):
 			for k in range(0, 3):
 				for l in range(0, 3):
-					if abs( S_eshelby[i][j][k][l] ) < 0.0001:
+					if abs( S_eshelby[i][j][k][l] ) < 1E-10:
 						S_eshelby[i][j][k][l] = 0.
 	return S_eshelby
 
 def clean_matrix( C_matrix ):
 	for i in range(0, len(C_matrix)):
 			for j in range(0, len(C_matrix)):
-				if abs( C_matrix[i][j] ) < 0.0001:
+				if abs( C_matrix[i][j] ) < 1E-10:
 					C_matrix[i][j] = 0.
 	return C_matrix
 

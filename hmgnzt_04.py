@@ -4,35 +4,34 @@ from tensor_personal_functions import *
 from hmgnzt_personal_functions import *
 
 
-def moyenne_orientation( Cm, angle0pi, angle02pi, N ):
+def moyenne_orientation( C, angle0pi, angle02pi, N ):
 	print
 	print "Starting moyenne orientation..."
 	print
-	C = voigt4_to_tensor4(Cm)
 	mx = 16*pow( 2, (N-1) )
 	print "N=", N
 	print "Max:", mx
 	Pm = initTensor( 0., 3, 3 )
-	C_matrix_moy = Cm
 	#C_tensor4_moy = initTensor( 0., 3, 3, 3, 3)
-	#print 
+	C_matrix_moy = initTensor( 0., 6, 6 )
+	print 
 
 	
 	for theta in range( 0, mx ):
 		for phi in range( 0, mx ):
 			for beta in range( 0, mx ):
 				
-				Pm[0][0] = cos(angle0pi[N][theta][0])*cos(angle02pi[N][phi][0])*cos(angle02pi[N][beta][0])-sin(angle02pi[N][phi][0])*sin(angle02pi[N][beta][0])
-				Pm[0][1] = -cos(angle0pi[N][theta][0])*cos(angle02pi[N][phi][0])*sin(angle02pi[N][beta][0])-sin(angle02pi[N][phi][0])*sin(angle02pi[N][beta][0])
-				Pm[0][2] = sin(angle0pi[N][theta][0])*cos(angle02pi[N][phi][0])
+				Pm[0][0] = cos(angle0pi[N-1][theta][0])*cos(angle02pi[N-1][phi][0])*cos(angle02pi[N-1][beta][0])-sin(angle02pi[N-1][phi][0])*sin(angle02pi[N-1][beta][0])
+				Pm[0][1] = -cos(angle0pi[N-1][theta][0])*cos(angle02pi[N-1][phi][0])*sin(angle02pi[N-1][beta][0])-sin(angle02pi[N-1][phi][0])*cos(angle02pi[N-1][beta][0])
+				Pm[0][2] = sin(angle0pi[N-1][theta][0])*cos(angle02pi[N-1][phi][0])
 				
-				Pm[1][0] = cos(angle0pi[N][theta][0]) * sin(angle02pi[N][phi][0]) * cos(angle02pi[N][beta][0])  + cos(angle02pi[N][phi][0]) * sin(angle02pi[N][beta][0])
-				Pm[1][1] = -cos(angle0pi[N][theta][0])*sin(angle02pi[N][phi][0])*sin(angle02pi[N][beta][0]) + cos(angle02pi[N][phi][0])*cos(angle02pi[N][beta][0])
-				Pm[1][2] = sin(angle0pi[N][theta][0])*sin(angle02pi[N][phi][0])
+				Pm[1][0] = cos(angle0pi[N-1][theta][0]) * sin(angle02pi[N-1][phi][0]) * cos(angle02pi[N-1][beta][0])  + cos(angle02pi[N-1][phi][0]) * sin(angle02pi[N-1][beta][0])
+				Pm[1][1] = -cos(angle0pi[N-1][theta][0])*sin(angle02pi[N-1][phi][0])*sin(angle02pi[N-1][beta][0]) + cos(angle02pi[N-1][phi][0])*cos(angle02pi[N-1][beta][0])
+				Pm[1][2] = sin(angle0pi[N-1][theta][0])*sin(angle02pi[N-1][phi][0])
 				
-				Pm[2][0] = - sin(angle0pi[N][theta][0]) * cos(angle02pi[N][beta][0])
-				Pm[2][1] = sin(angle0pi[N][theta][0])*sin(angle02pi[N][beta][0])
-				Pm[2][2] = cos(angle0pi[N][theta][0])
+				Pm[2][0] = - sin(angle0pi[N-1][theta][0]) * cos(angle02pi[N-1][beta][0])
+				Pm[2][1] = sin(angle0pi[N-1][theta][0])*sin(angle02pi[N-1][beta][0])
+				Pm[2][2] = cos(angle0pi[N-1][theta][0])
 				
 				#for m in range(0, 3):
 					#for o in range(0, 3):
@@ -44,21 +43,21 @@ def moyenne_orientation( Cm, angle0pi, angle02pi, N ):
 					for j in range(0, 3):
 						for k in range(0, 3):
 							for l in range(0, 3):
-								C_matrix_moy[0][0] = C_matrix_moy[0][0] + ( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][0]*Pm[k][0]*Pm[l][0]*C[i][j][k][l]* sin(angle0pi[N][theta][0]) * angle0pi[N][theta][1] * angle02pi[N][phi][1] * angle02pi[N][beta][1])
 								#for m in range(0, 3):
 									#for n in range(0, 3):
 										#for o in range(0, 3):
 											#for p in range(0, 3):
 												#C_tensor4_moy[m][n][o][p] = C_tensor4_moy[m][n][o][p] + ( (1./(8.*pow( pi,2)))*Pm[i][m]*Pm[j][n]*Pm[k][o]*Pm[l][p]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
-								C_matrix_moy[0][0] = C_matrix_moy[0][0] + ( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][0]*Pm[k][0]*Pm[l][0]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
-								C_matrix_moy[1][1] = C_matrix_moy[1][1] + ( (1./(8.*pow( pi,2)))*Pm[i][1]*Pm[j][1]*Pm[k][1]*Pm[l][1]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
-								C_matrix_moy[2][2] = C_matrix_moy[2][2] + ( (1./(8.*pow( pi,2)))*Pm[i][2]*Pm[j][2]*Pm[k][2]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
-								C_matrix_moy[3][3] = C_matrix_moy[3][3] + 2.*( (1./(8.*pow( pi,2)))*Pm[i][1]*Pm[j][2]*Pm[k][1]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
-								C_matrix_moy[4][4] = C_matrix_moy[4][4] + 2.*( (1./(8.*pow( pi,2)))*Pm[i][2]*Pm[j][0]*Pm[k][2]*Pm[l][0]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
-								C_matrix_moy[5][5] = C_matrix_moy[5][5] + 2.*( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][1]*Pm[k][0]*Pm[l][1]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
-								C_matrix_moy[0][1] = C_matrix_moy[0][1] + ( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][0]*Pm[k][1]*Pm[l][1]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
-								C_matrix_moy[0][2] = C_matrix_moy[0][2] + ( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][0]*Pm[k][2]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
-								C_matrix_moy[1][2] = C_matrix_moy[1][2] + ( (1./(8.*pow( pi,2)))*Pm[i][1]*Pm[j][1]*Pm[k][2]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
+								C_matrix_moy[0][0] = C_matrix_moy[0][0] + ( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][0]*Pm[k][0]*Pm[l][0]*C[i][j][k][l]*sin(angle0pi[N-1][theta][0])*angle0pi[N-1][theta][1]*angle02pi[N-1][phi][1]*angle02pi[N-1][beta][1])
+								C_matrix_moy[1][1] = C_matrix_moy[1][1] + ( (1./(8.*pow( pi,2)))*Pm[i][1]*Pm[j][1]*Pm[k][1]*Pm[l][1]*C[i][j][k][l]*sin(angle0pi[N-1][theta][0])*angle0pi[N-1][theta][1]*angle02pi[N-1][phi][1]*angle02pi[N-1][beta][1])
+								C_matrix_moy[2][2] = C_matrix_moy[2][2] + ( (1./(8.*pow( pi,2)))*Pm[i][2]*Pm[j][2]*Pm[k][2]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N-1][theta][0])*angle0pi[N-1][theta][1]*angle02pi[N-1][phi][1]*angle02pi[N-1][beta][1])
+								C_matrix_moy[3][3] = C_matrix_moy[3][3] + 2.*(1./(8.*pow( pi,2)))*Pm[i][1]*Pm[j][2]*Pm[k][1]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N-1][theta][0])*angle0pi[N-1][theta][1]*angle02pi[N-1][phi][1]*angle02pi[N-1][beta][1]
+								C_matrix_moy[4][4] = C_matrix_moy[4][4] + 2.*(1./(8.*pow( pi,2)))*Pm[i][2]*Pm[j][0]*Pm[k][2]*Pm[l][0]*C[i][j][k][l]*sin(angle0pi[N-1][theta][0])*angle0pi[N-1][theta][1]*angle02pi[N-1][phi][1]*angle02pi[N-1][beta][1]
+								C_matrix_moy[5][5] = C_matrix_moy[5][5] + 2.*(1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][1]*Pm[k][0]*Pm[l][1]*C[i][j][k][l]*sin(angle0pi[N-1][theta][0])*angle0pi[N-1][theta][1]*angle02pi[N-1][phi][1]*angle02pi[N-1][beta][1]
+								C_matrix_moy[0][1] = C_matrix_moy[0][1] + ( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][0]*Pm[k][1]*Pm[l][1]*C[i][j][k][l]*sin(angle0pi[N-1][theta][0])*angle0pi[N-1][theta][1]*angle02pi[N-1][phi][1]*angle02pi[N-1][beta][1])
+								C_matrix_moy[0][2] = C_matrix_moy[0][2] + ( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][0]*Pm[k][2]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N-1][theta][0])*angle0pi[N-1][theta][1]*angle02pi[N-1][phi][1]*angle02pi[N-1][beta][1])
+								C_matrix_moy[1][2] = C_matrix_moy[1][2] + ( (1./(8.*pow( pi,2)))*Pm[i][1]*Pm[j][1]*Pm[k][2]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N-1][theta][0])*angle0pi[N-1][theta][1]*angle02pi[N-1][phi][1]*angle02pi[N-1][beta][1])
+	
 	#C_matrix_moy = tensor4_to_voigt4( C_tensor4_moy )
 	for i in range(0, 6):
 		for j in range((i+1), 6):
@@ -97,7 +96,7 @@ for i in range( 0, len(C_NTC_matrix)):
 C_NTC_tensor4 = voigt4_to_tensor4(C_NTC_matrix)
 
 N = 1
-C_NTC_matrix_t = moyenne_orientation( C_NTC_matrix, angle_0pi, angle_2pi, N )
+C_NTC_matrix_t = moyenne_orientation( C_NTC_tensor4, angle_0pi, angle_2pi, N )
 print
 print "C_NTC_matrix_tilde:"
 for i in range(0, len(C_NTC_matrix_t)):
@@ -152,10 +151,44 @@ print "---------------------------------------------------------------------"
 print
 print "5% NTCs separes et dsitribues aleatoirement"
 
-a = [ 1., 1., 500.]
-C_MT_matrix_ale = mori_tanaka( a, v0, C0_tensor4, C_NTC_tensor4_t, zeta_csv, omega_csv )
-C_matrix_ale = moyenne_orientation( C_NTC_matrix, angle_0pi, angle_2pi, N )
+print
+print "C0_matrix:"
+for i in range(0, len(C0_matrix)):
+	print C0_matrix[i]
+print
+print "C_NTC_matrix:"
+for i in range(0, len(C_NTC_matrix)):
+	print C_NTC_matrix[i]
 
+a = [ 1., 1., 500.]
+
+S_eshelby_quad_tensor4 = generate_eshelby_tensor( a, C0_tensor4, zeta_csv, omega_csv )
+S_eshelby_quad_tensor4 = clean_S_eshelby(S_eshelby_quad_tensor4)
+S_eshelby_quad_matrix = tensor4_to_voigt4( S_eshelby_quad_tensor4 )
+
+print
+print "S_eshelby_quad_matrix:"
+for i in range(0, len(S_eshelby_quad_matrix)):
+	print S_eshelby_quad_matrix[i]
+
+C0_matrix = tensor4_to_voigt4( C0_tensor4 )
+
+Im = tensor4_to_voigt4( generate_I_tensor4() )
+C_difference = initTensor( 0., 6, 6 )
+for i in range(0, len(C0_matrix)):
+	for j in range(0, len(C0_matrix)):
+		C_difference[i][j] = C_NTC_matrix[i][j] - C0_matrix[i][j]
+T0_matrix = Im
+T1_matrix = inv( Im + dot( S_eshelby_quad_matrix, dot( inv(C0_matrix), (C_difference) ) ) )
+
+A0_matrix = inv( dot(v0,T0_matrix) + dot(v1,T1_matrix) )
+A1_matrix = dot( T1_matrix, A0_matrix )
+	
+C_MT_matrix_ale = dot( v1 ,dot( C_difference, A1_matrix ) )
+C_MT_tensor4_ale = voigt4_to_tensor4( C_MT_matrix_ale )
+
+N = 1
+C_matrix_ale = moyenne_orientation( C_MT_tensor4_ale, angle_0pi, angle_2pi, N )
 C_tensor4_ale = voigt4_to_tensor4( C_matrix_ale )
 
 k_ale= tensor4_contract4_tensor4( J_tensor4, C_tensor4_ale )/3.
@@ -164,6 +197,11 @@ mu_ale = tensor4_contract4_tensor4( K_tensor4, C_tensor4_ale )/10.
 
 print
 print "C_MT_matrix_ale:"
+for i in range(0, len(C_MT_matrix_ale)):
+	print C_MT_matrix_ale[i]
+	
+print
+print "C_matrix_ale:"
 for i in range(0, len(C_matrix_ale)):
 	print C_matrix_ale[i]
 
@@ -176,7 +214,14 @@ print "---------------------------------------------------------------------"
 print
 print "NTC alignes"
 
-C_MT_matrix_ali = mori_tanaka( a, v0, C0_tensor4, C_NTC_tensor4_t, zeta_csv, omega_csv )
+#C_MT_matrix_ali = mori_tanaka( a, v0, C0_tensor4, C_NTC_tensor4_t, zeta_csv, omega_csv )
+
+C_difference = initTensor( 0., 6, 6 )
+for i in range(0, len(C0_matrix)):
+	for j in range(0, len(C0_matrix)):
+		C_difference[i][j] = C_NTC_matrix[i][j] - C0_matrix[i][j]
+		
+C_MT_matrix_ali = C0_matrix + dot( v1 ,dot( C_difference, A1_matrix ) )
 C_MT_tensor4_ali = voigt4_to_tensor4( C_MT_matrix_ali )
 k_ali = tensor4_contract4_tensor4( J_tensor4, C_MT_tensor4_ali )/3.
 mu_ali = tensor4_contract4_tensor4( K_tensor4, C_MT_tensor4_ali )/10.
@@ -189,3 +234,12 @@ for i in range(0, len(C_MT_matrix_ali)):
 print 
 print "k_ali=", k_ali
 print "mu_ali=", mu_ali
+
+print 
+print "---------------------------------------------------------------------"
+print
+
+S_MT_matrix_aggregat = inv( C_MT_matrix_aggregat)
+E_aggregat = 1./S_MT_matrix_aggregat[0][0]
+print 
+print "E_aggregat=", E_aggregat
