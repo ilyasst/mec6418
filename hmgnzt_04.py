@@ -9,6 +9,7 @@ def moyenne_orientation( Cm, angle0pi, angle02pi, N ):
 	mx = 16*pow( 2, (N-1) )
 	Pm = initTensor( 0., 3, 3 )
 	C_matrix_moy = Cm
+	C_tensor4_moy = initTensor( 0., 3, 3, 3, 3)
 	
 	for theta in range( 0, mx ):
 		for phi in range( 0, mx ):
@@ -29,6 +30,11 @@ def moyenne_orientation( Cm, angle0pi, angle02pi, N ):
 					for j in range(0, 3):
 						for k in range(0, 3):
 							for l in range(0, 3):
+								#for m in range(0, 3):
+									#for n in range(0, 3):
+										#for o in range(0, 3):
+											#for p in range(0, 3):
+												#C_tensor4_moy[m][n][o][p] = C_tensor4_moy[m][n][o][p] + ( (1./(8.*pow( pi,2)))*Pm[i][m]*Pm[j][n]*Pm[k][o]*Pm[l][p]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
 								C_matrix_moy[0][0] = C_matrix_moy[0][0] + ( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][0]*Pm[k][0]*Pm[l][0]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
 								C_matrix_moy[1][1] = C_matrix_moy[1][1] + ( (1./(8.*pow( pi,2)))*Pm[i][1]*Pm[j][1]*Pm[k][1]*Pm[l][1]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
 								C_matrix_moy[2][2] = C_matrix_moy[2][2] + ( (1./(8.*pow( pi,2)))*Pm[i][2]*Pm[j][2]*Pm[k][2]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
@@ -38,6 +44,7 @@ def moyenne_orientation( Cm, angle0pi, angle02pi, N ):
 								C_matrix_moy[0][1] = C_matrix_moy[0][1] + ( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][0]*Pm[k][1]*Pm[l][1]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
 								C_matrix_moy[0][2] = C_matrix_moy[0][2] + ( (1./(8.*pow( pi,2)))*Pm[i][0]*Pm[j][0]*Pm[k][2]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
 								C_matrix_moy[1][2] = C_matrix_moy[1][2] + ( (1./(8.*pow( pi,2)))*Pm[i][1]*Pm[j][1]*Pm[k][2]*Pm[l][2]*C[i][j][k][l]*sin(angle0pi[N][theta][0])*angle0pi[N][theta][1]*angle02pi[N][phi][1]*angle02pi[N][beta][1])
+	#C_matrix_moy = tensor4_to_voigt4( C_tensor4_moy )
 	for i in range(0, 6):
 		for j in range((i+1), 6):
 			C_matrix_moy[j][i] = C_matrix_moy[i][j]
