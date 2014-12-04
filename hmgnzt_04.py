@@ -5,11 +5,18 @@ from hmgnzt_personal_functions import *
 
 
 def moyenne_orientation( Cm, angle0pi, angle02pi, N ):
+	print
+	print "Starting moyenne orientation..."
+	print
 	C = voigt4_to_tensor4(Cm)
 	mx = 16*pow( 2, (N-1) )
+	print "N=", N
+	print "Max:", mx
 	Pm = initTensor( 0., 3, 3 )
 	C_matrix_moy = Cm
-	C_tensor4_moy = initTensor( 0., 3, 3, 3, 3)
+	#C_tensor4_moy = initTensor( 0., 3, 3, 3, 3)
+	#print 
+
 	
 	for theta in range( 0, mx ):
 		for phi in range( 0, mx ):
@@ -25,6 +32,7 @@ def moyenne_orientation( Cm, angle0pi, angle02pi, N ):
 				Pm[2][0] = - sin(angle0pi[N][theta][0]) * cos(angle02pi[N][beta][0])
 				Pm[2][1] = sin(angle0pi[N][theta][0])*sin(angle02pi[N][beta][0])
 				Pm[2][2] = cos(angle0pi[N][theta][0])
+				
 	
 				for i in range(0, 3):
 					for j in range(0, 3):
