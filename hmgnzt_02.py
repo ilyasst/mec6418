@@ -117,8 +117,8 @@ print 1./(2.*S_MT_matrix[3][3]), 1./(2.*Svoigt_matrix[3][3]), 1./(2.*Sreuss_matr
 print
 print "mu_l: "
 print "MT		", "Voigt		", "Reuss"
-print -S_MT_matrix[0][1]/(2.*S_MT_matrix[1][1]), -Svoigt_matrix[0][1]/(2.*Svoigt_matrix[1][1]), -Sreuss_matrix[0][1]/(2.*Sreuss_matrix[1][1])
+print -S_MT_matrix[0][2]/(S_MT_matrix[2][2]), -Svoigt_matrix[0][2]/(Svoigt_matrix[2][2]), -Sreuss_matrix[0][2]/(Sreuss_matrix[2][2])
 print
 print "mu_t: "
 print "MT		", "Voigt		", "Reuss"
-print -S_MT_matrix[0][1]/(2.*S_MT_matrix[2][2]), -Svoigt_matrix[0][1]/(2.*Svoigt_matrix[2][2]), -Sreuss_matrix[0][1]/(2.*Sreuss_matrix[2][2])
+print -S_MT_matrix[0][1]/(S_MT_matrix[1][1]), -Svoigt_matrix[0][1]/(Svoigt_matrix[1][1]), -Sreuss_matrix[0][1]/(Sreuss_matrix[1][1])
