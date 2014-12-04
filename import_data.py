@@ -169,3 +169,28 @@ def import_hmgnzt_quad( file_name ):
 			quad[i][1] = float(row[1])
 			i = i + 1
 	return quad
+
+def import_anglepi( file_name ):
+	i = 0
+	
+	with open( os.getcwd() + "/hmgnzt_data/" + file_name, 'rb' ) as csvfile:
+		spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+		total_lines = 0
+		for line in spamreader:
+			total_lines = total_lines + 1 
+			
+		angle_pi = initTensor( 0., total_lines, 2 )
+		print
+		print "Importing data from", file_name
+		print "The file contains", total_lines, "lines."
+		csvfile.seek(0)
+		i = 0
+		for row in spamreader:
+			angle_pi[i][0] = float(row[0])
+			angle_pi[i][1] = float(row[1])
+			i = i + 1
+		
+	return angle_pi
+		
+		
+		
