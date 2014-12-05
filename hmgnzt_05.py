@@ -32,12 +32,12 @@ def temp_07_05():
 	nu1 = 0.35
 	
 	# k1
-	k1_0 = E1/(3.*(1 - 2*nu1))
+	k1_0 = E1/(3.*(1. - 2.*nu1))
 	k1 = k1_0
 	k1_s = laplace_carson( k1, t, s )
 	
 	# mu1_0
-	mu1_0 = E1/(2*(1 + nu1))
+	mu1_0 = E1/(2.*(1. + nu1))
 	mu1 = mu1_0
 	mu1_s = laplace_carson(mu1, t, s) 
 
