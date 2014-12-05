@@ -53,19 +53,12 @@ def mori_tanaka( a, v0, C0_tensor4, C1_tensor4, zeta_csv, omega_csv ):
 def generate_eshelby_tensor( a, C_tensor4, zeta_csv, omega_csv ):
 	zetas = determining_zetas( zeta_csv, omega_csv )
 	xis = determining_xis( a, zetas, len(zeta_csv), len(omega_csv) )
-	print
-	print "Retrieving data from xls files..."
 	K_eshelby = determining_K_eshelby( C_tensor4, xis, len(zeta_csv), len(omega_csv) )
-	print "Determining K_eshelby..."
 	N_eshelby = determining_N_eshelby( K_eshelby, len(zeta_csv), len(omega_csv) )
-	print "Determining N_eshelby..."
-		
 	D_eshelby = determining_D_eshelby( K_eshelby, len(zeta_csv), len(omega_csv) )
-	print "Determining D_eshelby..."
 	G_eshelby = determining_G_eshelby( xis, N_eshelby, D_eshelby, len(zeta_csv), len(omega_csv) )
-	print "Determining G_eshelby..."
 	W_eshelby = determining_W_eshelby( zeta_csv, omega_csv, len(zeta_csv), len(omega_csv) )
-	print "Determining W_eshelby..."
+	print "Determined K_eshelby, N_eshelby, D_eshelby, G_eshelby..."
 
 	S_eshelby = initTensor( 0., 3, 3, 3, 3 )
 

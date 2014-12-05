@@ -188,7 +188,7 @@ betaMT_s = (2.*mu0_s + v1*2.*(mu1_s - mu0_s)*betaA1_s)
 muMT_s = (betaMT_s/2.)
 
 ### Collocation
-n = 5
+n = 20
 
 # to
 to = []
@@ -217,7 +217,8 @@ phi_k = []
 for i in range(0, n):
 	delta_kMT_s_list.append( delta_kMT_s.subs(s, to[i]) )
 #phi_k = solve(C, delta_kMT_s_list)	
-phi_k = solve( C, delta_kMT_s_list )
+#phi_k = solve( C, delta_kMT_s_list )
+phi_k = dot( pinv(C), delta_kMT_s_list )
 print "phi_k:"
 print phi_k
 
@@ -226,7 +227,8 @@ delta_muMT_s_list = []
 phi_mu = []
 for i in range(0, n):
 	delta_muMT_s_list.append( delta_muMT_s.subs(s, to[i]) )
-phi_mu = solve( C,delta_muMT_s_list )
+#phi_mu = solve( C,delta_muMT_s_list )
+phi_mu = dot( pinv(C), delta_muMT_s_list )
 print "phi_mu:"
 print phi_mu
 
