@@ -78,9 +78,9 @@ def problem07_03_transverse_case():
 	K_tensor4 = generate_K_tensor4()
 	K_matrix = tensor4_to_voigt4( K_tensor4 )
 
-	E0 = 3000.
+	E0 = 3.
 	nu0 = 0.3
-	E1 = 70000.
+	E1 = 70.
 	nu1 = 0.3
 	
 	v0 = 0.7
@@ -153,6 +153,7 @@ def problem07_03_transverse_case():
 		C_matrix = C_temp_matrix
 		
 		if k > 1:
+			print
 			print "Iteration:", len(C_list)
 			error_0 = 0.
 			error_1 = 0.
